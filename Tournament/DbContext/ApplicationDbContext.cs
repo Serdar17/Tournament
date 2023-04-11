@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Tournament.Models;
 
-namespace Tournament.AppDbContext;
+namespace Tournament.DbContext;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<Participant>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
@@ -11,7 +12,7 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.UseSerialColumns();
+        base.OnModelCreating(modelBuilder);
     }
 
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -19,6 +20,4 @@ public class ApplicationDbContext : DbContext
     //     base.OnConfiguring(optionsBuilder);
     //     optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
     // }
-
-    public DbSet<Participant> Participants { get; set; }
 }

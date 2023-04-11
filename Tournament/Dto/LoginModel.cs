@@ -2,7 +2,7 @@
 
 namespace Tournament.Dto;
 
-public class LoginModelDto
+public class LoginModel
 {
     [Required]
     public string UserName { get; set; }

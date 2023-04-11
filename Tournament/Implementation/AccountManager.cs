@@ -1,4 +1,5 @@
-﻿using Ardalis.Result;
+﻿using System.Security.Claims;
+using Ardalis.Result;
 using Microsoft.AspNetCore.Identity;
 using Tournament.Dto;
 using Tournament.Models;
@@ -8,67 +9,242 @@ namespace Tournament.Implementation;
 
 public class AccountManager : IAccountManager
 {
-    private readonly IParticipantService _participantService;
     private readonly ITokenService _tokenService;
-    private readonly PasswordHasher<Participant> _hasher;
-
-    public AccountManager(IParticipantService participantService, ITokenService tokenService)
+    private readonly UserManager<Participant> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    
+    public AccountManager(ITokenService tokenService, UserManager<Participant> userManager, 
+        RoleManager<IdentityRole> roleManager)
     {
-        _participantService = participantService;
         _tokenService = tokenService;
-        _hasher = new PasswordHasher<Participant>();
+        _userManager = userManager;
+        _roleManager = roleManager;
     }
     
-    public Result<TokenApiModel> RegistrationAsync(Participant participant)
+    public async Task<Result<Response>> RegistrationAsync(Participant participant)
     {
-        if (_participantService.GetParticipantByUserName(participant.Email) is not null)
+        var userExists = await _userManager.FindByNameAsync(participant.UserName);
+        if (userExists is not null)
         {
-            return Result<TokenApiModel>.Invalid(new List<ValidationError>()
-            {
-                new ValidationError()
-                {
-                    Identifier = participant.Email,
-                    ErrorMessage = "User with this username already exists"
-                }
-            });
+            return Result.Error("User already exists!");
         }
         
-        participant.Password = _hasher.HashPassword(participant, participant.Password);
-        var entity = _participantService.Create(participant);
-        
-        var accessToken = _tokenService.GenerateAccessToken(entity);
-        var refreshToken = _tokenService.GenerateRefreshToken(entity);
+        participant.PasswordHash = _userManager.PasswordHasher.HashPassword(participant, participant.PasswordHash);
+        var result = await _userManager.CreateAsync(participant);
+        if (!result.Succeeded)
+        {
+            return Result.Error("User creation failed! Please check user details and try again.");
+        }
 
-        return Result<TokenApiModel>.Success(new TokenApiModel()
+        return Result.Success(new Response()
+        {
+            Status = "Success",
+            Message = "User created successfully!"
+        });
+    }
+
+    public async Task<Result<TokenApiModel>> LoginAsync(LoginModel loginModel)
+    {
+        var participant = await _userManager.FindByNameAsync(loginModel.UserName);
+        
+        if (participant is null || ! await _userManager.CheckPasswordAsync(participant, loginModel.Password))
+        {
+            return Result.Error("Invalid username or password");
+        }
+        
+        var participantRoles = await _userManager.GetRolesAsync(participant);
+        
+        var authClaims = new List<Claim>()
+        {
+            new (ClaimTypes.Name, participant.UserName),
+            new (ClaimTypes.Email, participant.Email),
+            new ("id", participant.Id)
+        };
+
+        foreach (var userRole in participantRoles)
+        {
+            authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+        }
+        
+        var accessToken = _tokenService.GenerateToken(authClaims);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+
+        participant.RefreshToken = refreshToken;
+        participant.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
+
+        await _userManager.UpdateAsync(participant);
+
+        return Result.Success(new TokenApiModel()
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken
         });
     }
 
-    public Result<TokenApiModel> LoginAsync(LoginModel loginModel)
+    public async Task<Result<Response>> RegisterAdminAsync(RegisterRoleModel registerRoleModel)
     {
-        var entity = _participantService.GetParticipantByUserName(loginModel.UserName);
-        if (entity is null 
-            || _hasher.VerifyHashedPassword(entity, entity.Password, loginModel.Password) != PasswordVerificationResult.Success)
+        var participant = await _userManager.FindByNameAsync(registerRoleModel.UserName);
+        
+        if (participant is null)
         {
-            return Result<TokenApiModel>.Invalid(new List<ValidationError>()
+            return Result.Error("Invalid username");
+        }
+
+        var roles = await _userManager.GetRolesAsync(participant);
+        if (roles.Count(role => role.Equals(ParticipantRole.Admin)) == 1)
+        {
+            return Result.Error("The user already has a role");
+        }
+        
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Participant))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Participant));
+        }
+        
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Manager))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Manager));
+        }
+        
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Admin))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Admin));
+        }
+
+        IdentityResult result = null;
+        if (await _roleManager.RoleExistsAsync(ParticipantRole.Admin))
+        {
+            result = await _userManager.AddToRolesAsync(participant, new List<string>()
             {
-                new ValidationError()
-                {
-                    Identifier = loginModel.UserName,
-                    ErrorMessage = "Invalid username or password"
-                }
+                ParticipantRole.Admin
+            });
+        }
+
+        if (result is null || !result.Succeeded)
+        {
+            return Result.Error("The administrator role already exists for this user");
+        }
+
+        return Result.Success(new Response()
+        {
+            Status = "Success",
+            Message = "The admin role has been successfully added"
+        });
+    }
+
+    public async Task<Result<Response>> RegisterManagerAsync(RegisterRoleModel registerRoleModel)
+    {
+        var participant = await _userManager.FindByNameAsync(registerRoleModel.UserName);
+        
+        if (participant is null)
+        {
+            return Result.Error("Invalid username");
+        } 
+        
+        var roles = await _userManager.GetRolesAsync(participant);
+        if (roles.Count(role => role.Equals(ParticipantRole.Manager)) == 1)
+        {
+            return Result.Error("The user already has a role");
+        }
+        
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Participant))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Participant));
+        }
+        
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Manager))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Manager));
+        }
+
+        IdentityResult result = null;
+        if (await _roleManager.RoleExistsAsync(ParticipantRole.Manager))
+        {
+            result = await _userManager.AddToRolesAsync(participant, new List<string>()
+            {
+                ParticipantRole.Manager, ParticipantRole.Participant
             });
         }
         
-        var accessToken = _tokenService.GenerateAccessToken(entity);
-        var refreshToken = _tokenService.GenerateRefreshToken(entity);
-
-        return Result<TokenApiModel>.Success(new TokenApiModel()
+        if (result is null || !result.Succeeded)
         {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
+            return Result.Error("The administrator role already exists for this user");
+        }
+
+        return Result.Success(new Response()
+        {
+            Status = "Success",
+            Message = "The manager role has been successfully added"
+        });
+    }
+
+    public async Task<Result<TokenApiModel>> RefreshTokenAsync(TokenApiModel tokenApiModel)
+    {
+        var accessToken = tokenApiModel.AccessToken;
+        var refreshToken = tokenApiModel.RefreshToken;
+
+        var principal = _tokenService.GetPrincipalFromExpiredToken(accessToken);
+
+        if (principal is null)
+        {
+            return Result.Error("Invalid access token or refresh token");
+        }
+
+        var userName = principal.Identity.Name;
+        var participant = await _userManager.FindByNameAsync(userName);
+        
+        if (participant == null || participant.RefreshToken != refreshToken ||
+            participant.RefreshTokenExpiryTime <= DateTime.Now)
+        {
+            return Result.Error("Invalid access token or refresh token");
+        }
+        
+        var newAccessToken = _tokenService.GenerateToken(principal.Claims.ToList());
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+        
+        participant.RefreshToken = newRefreshToken;
+        await _userManager.UpdateAsync(participant);
+
+        return Result.Success(new TokenApiModel()
+        {
+            AccessToken = newAccessToken,
+            RefreshToken = newRefreshToken
+        });
+    }
+
+    public async Task<Result<Response>> RevokeRefreshTokenByIdAsync(Guid id)
+    {
+        var participant = await _userManager.FindByIdAsync(id.ToString());
+
+        if (participant is null)
+        {
+            return Result<Response>.Error("Invalid id");
+        }
+
+        participant.RefreshToken = null;
+        await _userManager.UpdateAsync(participant);
+
+        return Result.Success(new Response()
+        {
+            Status = "Success",
+            Message = "The refresh token has been canceled"
+        });
+    }
+
+    public async Task<Result<Response>> RevokeAllRefreshTokenAsync()
+    {
+        var participants = _userManager.Users.ToList();
+
+        foreach (var participant in participants)
+        {
+            participant.RefreshToken = null;
+            await _userManager.UpdateAsync(participant);
+        }
+
+        return Result.Success(new Response()
+        {
+            Status = "Success",
+            Message = "All tokens have been cancelled"
         });
     }
 }

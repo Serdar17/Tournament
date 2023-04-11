@@ -2,10 +2,8 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Tournament.Models;
 using Tournament.Options;
 using Tournament.Services;
 
@@ -14,21 +12,15 @@ namespace Tournament.Implementation;
 public class TokenService : ITokenService
 {
     private readonly JwtOption _jwtSetting;
-    private readonly IParticipantService _participantService;
+    // private readonly IParticipantService _participantService;
     
-    public TokenService(IOptionsSnapshot<JwtOption> optionsSnapshot, IParticipantService participantService)
+    public TokenService(IOptionsSnapshot<JwtOption> optionsSnapshot)
     {
         _jwtSetting = optionsSnapshot.Value;
-        _participantService = participantService;
     }
     
-    private string GenerateToken(Participant participant, int expirationTime)
+    public string GenerateToken(List<Claim> claims)
     {
-        var claims = new[] {  
-            new Claim(ClaimTypes.Name, participant.FirstName),
-            new Claim(ClaimTypes.Email, participant.Email),
-        };
-        
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSetting.Key)); 
         
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
@@ -38,21 +30,29 @@ public class TokenService : ITokenService
             audience: _jwtSetting.Audience,
             claims: claims,
             notBefore: DateTime.Now,
-            expires: DateTime.Now.AddMinutes(expirationTime), 
+            expires: DateTime.Now.AddMinutes(_jwtSetting.AccessTokenExpiryDurationMinutes), 
             signingCredentials: credentials);  
         
         return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
     }
-
-    public string GenerateAccessToken(Participant participant)
-    {
-        return GenerateToken(participant, _jwtSetting.AccessTokenExpiryDurationMinutes);
-    }
     
-    public string GenerateRefreshToken(Participant participant)
+    public string GenerateRefreshToken()
     {
-        return GenerateToken(participant, _jwtSetting.RefreshTokenExpiryDurationMinutes);
+        var randomNumber = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomNumber);
+        return Convert.ToBase64String(randomNumber);
     }
+
+    // public string GenerateAccessToken(Participant participant)
+    // {
+    //     return GenerateToken(participant, _jwtSetting.AccessTokenExpiryDurationMinutes);
+    // }
+    //
+    // public string GenerateRefreshToken(Participant participant)
+    // {
+    //     return GenerateToken(participant, _jwtSetting.RefreshTokenExpiryDurationMinutes);
+    // }
     
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {

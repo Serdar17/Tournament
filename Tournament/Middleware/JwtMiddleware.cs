@@ -47,13 +47,13 @@ public class JwtMiddleware
 
             // attach account to context on successful jwt validation
             // context.Items["User"] = _userService.GetUserDetails();
-            context.Items["User"] = "admin";
+            // context.Items["User"] = "admin";
         }
         catch
         {
             // do nothing if jwt validation fails
             // account is not attached to context so request won't have access to secure routes
-            // TODO: Сделать редирект на странцие регистрации
+            // TODO: Сделать редирект на странцу регистрации
         }
     }
 }

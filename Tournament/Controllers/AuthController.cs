@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Dto;
@@ -10,45 +11,144 @@ namespace Tournament.Controllers;
 public sealed class AuthController : ApiController
 {
     private readonly IMapper _mapper;
-    private readonly IAccountManager _manager;
-    
-    public AuthController(IMapper mapper, IAccountManager manager)
+    private readonly IAccountManager _accountManager;
+    private readonly ILogger<AuthController> _logger;
+
+    public AuthController(IMapper mapper, IAccountManager accountManager, ILogger<AuthController> logger)
     {
         _mapper = mapper;
-        _manager = manager;
+        _accountManager = accountManager;
+        _logger = logger;
     }
     
     [HttpPost("register")]
     [AllowAnonymous]
-    public IActionResult Register([FromBody] RegisterModel registerModel)
+    public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
     {
         var participant = _mapper.Map<Participant>(registerModel);
 
-        var result = _manager.RegistrationAsync(participant);
+        var result = await _accountManager.RegistrationAsync(participant);
 
-        if (result.IsSuccess)
+        if (!result.IsSuccess)
         {
-            return Ok(result.Value);
+            return StatusCode(StatusCodes.Status400BadRequest,
+                new Response()
+                {
+                    Status = "Error",
+                    Message = result.Errors.FirstOrDefault()
+                });
         }
 
-        return BadRequest(result.ValidationErrors);
+        return Ok(new Response
+        {
+            Status = "Success", 
+            Message = "User created successfully!"
+        });
     }
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public IActionResult Login([FromBody] LoginModel loginModel)
+    public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
     {
-        var result = _manager.LoginAsync(loginModel);
+        var result = await _accountManager.LoginAsync(loginModel);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
         
+        _logger.LogInformation("Some log!!!");
+
+        return StatusCode(StatusCodes.Status400BadRequest, new Response()
+        {
+            Status = "Error",
+            Message = result.Errors.FirstOrDefault()
+        });
+    }
+
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [HttpPost("register-admin")]
+    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRoleModel registerRoleModel)
+    {
+        var response = await _accountManager.RegisterAdminAsync(registerRoleModel);
+
+        if (response.IsSuccess)
+        {
+            return Ok(response.Value);
+        }
+
+        return StatusCode(StatusCodes.Status400BadRequest, new Response()
+        {
+            Status = "Error",
+            Message = response.Errors.FirstOrDefault()
+        });
+    }
+
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [HttpPost("register-manager")]
+    public async Task<IActionResult> RegisterManager([FromBody] RegisterRoleModel registerRoleModel)
+    {
+        var response = await _accountManager.RegisterManagerAsync(registerRoleModel);
+        
+        if (response.IsSuccess)
+        {
+            return Ok(response.Value);
+        }
+
+        return StatusCode(StatusCodes.Status400BadRequest, new Response()
+        {
+            Status = "Error",
+            Message = response.Errors.FirstOrDefault()
+        });
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken(TokenApiModel tokenApiModel)
+    {
+        var result = await _accountManager.RefreshTokenAsync(tokenApiModel);
+
         if (result.IsSuccess)
         {
             return Ok(result.Value);
         }
 
-        return BadRequest(result.ValidationErrors);
+        return StatusCode(StatusCodes.Status400BadRequest, new Response()
+        {
+            Status = "Error",
+            Message = result.Errors.FirstOrDefault()
+        });
+    }
+
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [HttpPost("revoke/{id:guid}")]
+    public async Task<IActionResult> RevokeToken([FromRoute] Guid id)
+    {
+        var result = await _accountManager.RevokeRefreshTokenByIdAsync(id);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return StatusCode(StatusCodes.Status400BadRequest, new Response()
+        {
+            Status = "Error",
+            Message = result.Errors.FirstOrDefault()
+        });
+    }
+
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
+    [HttpPost("revoke-all")]
+    public async Task<IActionResult> RevokeAll()
+    {
+        var result = await _accountManager.RevokeAllRefreshTokenAsync();
+
+        return Ok(result.Value);
     }
     
-    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+    
+    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet(nameof(GetResult))]
     public IActionResult GetResult()
     {

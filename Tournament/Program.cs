@@ -1,9 +1,13 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Tournament.AppDbContext;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Json;
+using Tournament.DbContext;
+using Tournament.Extensions;
 using Tournament.Implementation;
 using Tournament.MappingConfiguration;
 using Tournament.Middleware;
@@ -33,57 +37,33 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<ParticipantProfile>();
 });
 
-builder.Services.AddScoped<IParticipantRepository<Participant>, ParticipantRepository>();
-builder.Services.AddScoped<IParticipantService, ParticipantService>();
+#region Configure Serilog
+//
+// builder.Host.UseSerilog((ctx, lc) => lc
+//     .WriteTo.Console(LogEventLevel.Information,
+//         outputTemplate:
+//         "{Timestamp:HH:mm:ss:ms} LEVEL:[{Level}]| THREAD:|{ThreadId}| Source: |{Source}| {Message}{NewLine}{Exception}")
+//     .WriteTo.Seq("http://localhost:5341")
+//     .WriteTo.File("log.txt")
+//     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning));
+
+#endregion
+
+
+builder.Services.AddIdentity<Participant, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// builder.Services.AddScoped<IParticipantRepository<Participant>, ParticipantRepository>();
+// builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("EnableCORS", cfg => 
-    { 
-        cfg.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod(); 
-    });
-});
+builder.Services.ConfigureCors();
 
 #region Swagger Configuration
 
-builder.Services.AddSwaggerGen(swagger =>
-{
-    //This is to generate the Default UI of Swagger Documentation
-    swagger.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Version = "v1",
-        Title = "JWT Token Authentication API",
-        Description = "ASP.NET Core 7.0 Web API"
-    });
-    // To Enable authorization using Swagger (JWT)
-    swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
-    });
-    swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-});
+builder.Services.ConfigureSwagger();
 
 #endregion
 
@@ -119,6 +99,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseCors("EnableCORS");

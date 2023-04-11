@@ -5,9 +5,13 @@ namespace Tournament.Services;
 
 public interface ITokenService
 {
-    public string GenerateAccessToken(Participant participant);
+    // public string GenerateAccessToken(Participant participant);
 
-    public string GenerateRefreshToken(Participant participant);
+    public string GenerateToken(List<Claim> claims);
+
+    public string GenerateRefreshToken();
+
+    // public string GenerateRefreshToken(Participant participant);
 
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
 }
