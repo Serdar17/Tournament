@@ -3,7 +3,7 @@ using Tournament.Enums;
 
 namespace Tournament.Dto;
 
-public class RegisterModel
+public class ParticipantInfoModel
 {
     [Required]
     public string FirstName { get; set; }
@@ -28,18 +28,6 @@ public class RegisterModel
     [EmailAddress]
     public string Email { get;  set; }
     
-    [Required] 
-    public string UserName { get; set; }
-    
-    [Required]
-    public string Password { get; set; }
-    
     [Required]
     public int SchoolNumber { get; set; }
-
-    [Required]
-    public SportsCategory SportsCategory { get;  set; }
-
-    [Required]
-    public long Rating { get; set; }
 }

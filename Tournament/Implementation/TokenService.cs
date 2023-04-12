@@ -12,7 +12,6 @@ namespace Tournament.Implementation;
 public class TokenService : ITokenService
 {
     private readonly JwtOption _jwtSetting;
-    // private readonly IParticipantService _participantService;
     
     public TokenService(IOptionsSnapshot<JwtOption> optionsSnapshot)
     {
@@ -43,16 +42,6 @@ public class TokenService : ITokenService
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
     }
-
-    // public string GenerateAccessToken(Participant participant)
-    // {
-    //     return GenerateToken(participant, _jwtSetting.AccessTokenExpiryDurationMinutes);
-    // }
-    //
-    // public string GenerateRefreshToken(Participant participant)
-    // {
-    //     return GenerateToken(participant, _jwtSetting.RefreshTokenExpiryDurationMinutes);
-    // }
     
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {

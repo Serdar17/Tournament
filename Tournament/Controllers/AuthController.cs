@@ -29,21 +29,17 @@ public sealed class AuthController : ApiController
 
         var result = await _accountManager.RegistrationAsync(participant);
 
-        if (!result.IsSuccess)
+        if (result.IsSuccess)
         {
-            return StatusCode(StatusCodes.Status400BadRequest,
-                new Response()
-                {
-                    Status = "Error",
-                    Message = result.Errors.FirstOrDefault()
-                });
+            return Ok(result.Value);
         }
-
-        return Ok(new Response
-        {
-            Status = "Success", 
-            Message = "User created successfully!"
-        });
+        
+        return StatusCode(StatusCodes.Status400BadRequest,
+            new Response()
+            {
+                Status = "Error",
+                Message = result.Errors.FirstOrDefault()
+            });
     }
 
     [HttpPost("login")]
@@ -66,7 +62,7 @@ public sealed class AuthController : ApiController
         });
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
     [HttpPost("register-admin")]
     public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRoleModel registerRoleModel)
     {
@@ -84,7 +80,7 @@ public sealed class AuthController : ApiController
         });
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
     [HttpPost("register-manager")]
     public async Task<IActionResult> RegisterManager([FromBody] RegisterRoleModel registerRoleModel)
     {
@@ -145,9 +141,7 @@ public sealed class AuthController : ApiController
 
         return Ok(result.Value);
     }
-    
-    
-    
+
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpGet(nameof(GetResult))]
     public IActionResult GetResult()

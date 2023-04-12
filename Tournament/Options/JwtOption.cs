@@ -12,5 +12,5 @@ public class JwtOption
 
     public int AccessTokenExpiryDurationMinutes { get; set; }
     
-    public int RefreshTokenExpiryDurationMinutes { get; set; }
+    public int RefreshTokenExpiryDurationDays { get; set; }
 }

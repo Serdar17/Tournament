@@ -18,11 +18,11 @@ using Tournament.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
@@ -55,7 +55,7 @@ builder.Services.AddIdentity<Participant, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // builder.Services.AddScoped<IParticipantRepository<Participant>, ParticipantRepository>();
-// builder.Services.AddScoped<IParticipantService, ParticipantService>();
+builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 

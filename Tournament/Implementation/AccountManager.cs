@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
 using Ardalis.Result;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Tournament.Dto;
 using Tournament.Models;
+using Tournament.Options;
 using Tournament.Services;
 
 namespace Tournament.Implementation;
@@ -12,13 +14,16 @@ public class AccountManager : IAccountManager
     private readonly ITokenService _tokenService;
     private readonly UserManager<Participant> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly JwtOption _jwtOption;
+    
     
     public AccountManager(ITokenService tokenService, UserManager<Participant> userManager, 
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole> roleManager, IOptionsSnapshot<JwtOption> optionsSnapshot)
     {
         _tokenService = tokenService;
         _userManager = userManager;
         _roleManager = roleManager;
+        _jwtOption = optionsSnapshot.Value;
     }
     
     public async Task<Result<Response>> RegistrationAsync(Participant participant)
@@ -70,7 +75,7 @@ public class AccountManager : IAccountManager
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         participant.RefreshToken = refreshToken;
-        participant.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1);
+        participant.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtOption.RefreshTokenExpiryDurationDays);
 
         await _userManager.UpdateAsync(participant);
 
