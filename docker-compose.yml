@@ -1,0 +1,32 @@
+﻿version: "3.9"
+networks:
+  tournament-dev:
+    driver: bridge
+services:
+  app:
+    container_name: tournament
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    hostname: "192.168.192.137"
+    networks:
+      - tournament-dev
+    depends_on:
+      - postgres_db
+  postgres_db:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: tournament
+    ports:
+      - "5432:5432"
+    networks:
+      - tournament-dev
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Tournament.Enums;
+using Tournament.Validation;
 
 namespace Tournament.Dto;
 
@@ -15,7 +16,7 @@ public class RegisterModel
     public string LastName { get; set; }
     
     [Required] 
-    [Phone]
+    // [PhoneValidation]
     public string PhoneNumber { get; set; }
     
     [Required]
@@ -32,6 +33,7 @@ public class RegisterModel
     public string UserName { get; set; }
     
     [Required]
+    // [MinLength(8, ErrorMessage = "The password must be longer than 8 characters")]
     public string Password { get; set; }
     
     [Required]

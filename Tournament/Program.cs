@@ -24,7 +24,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 
-
+var a = builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
@@ -82,9 +82,9 @@ builder.Services.AddAuthentication(option =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["JwtSetting:Issuer"],
-        ValidAudience = builder.Configuration["JwtSetting:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSetting:Key"]))
+        ValidIssuer = builder.Configuration["JwtOption:Issuer"],
+        ValidAudience = builder.Configuration["JwtOption:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOption:Key"]))
     };
 });
 
@@ -99,6 +99,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler("/Error");
+app.UseHsts();
+
 // app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
@@ -110,5 +113,4 @@ app.UseAuthorization();
 app.UseMiddleware<JwtMiddleware>();
 
 app.MapControllers();
-
 app.Run();
