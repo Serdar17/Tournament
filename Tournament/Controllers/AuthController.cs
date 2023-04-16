@@ -44,6 +44,8 @@ public sealed class AuthController : ApiController
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(TokenApiModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
     {
         var result = await _accountManager.LoginAsync(loginModel);

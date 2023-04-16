@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
 
 namespace Tournament.Extensions;
 
@@ -58,25 +60,36 @@ public static class ServiceExtensions
         });
     }
 
-    // public static void ConfigureAuthentication(this IServiceCollection services)
-    // {
-    //     services.AddAuthentication(option =>
-    //     {
-    //         option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    //         option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    //
-    //     }).AddJwtBearer(options =>
-    //     {
-    //         options.TokenValidationParameters = new TokenValidationParameters
-    //         {
-    //             ValidateIssuer = true,
-    //             ValidateAudience = true,
-    //             ValidateLifetime = true,
-    //             ValidateIssuerSigningKey = true,
-    //             ValidIssuer = builder.Configuration["JwtSetting:Issuer"],
-    //             ValidAudience = builder.Configuration["JwtSetting:Audience"],
-    //             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSetting:Key"]))
-    //         };
-    //     });
-    // }
+    public static void ConfigureAuthentication(this IServiceCollection services, WebApplicationBuilder builder)
+    {
+        services.AddAuthentication(option =>
+        {
+            option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    
+        }).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["JwtOption:Issuer"],
+                ValidAudience = builder.Configuration["JwtOption:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOption:Key"]))
+            };
+        });
+    }
+
+    public static void ConfigureSerilog(this IHostBuilder hostBuilder)
+    {
+        hostBuilder.UseSerilog((ctx, lc) => lc
+            .WriteTo.Console(LogEventLevel.Information,
+                outputTemplate:
+                "{Timestamp:HH:mm:ss:ms} LEVEL:[{Level}]| THREAD:|{ThreadId}| Source: |{Source}| {Message}{NewLine}{Exception}")
+            .WriteTo.Seq("http://localhost:5341")
+            .WriteTo.File("log.txt")
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning));
+    }
 }
