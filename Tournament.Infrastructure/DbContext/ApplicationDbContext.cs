@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Tournament.Models;
+using Tournament.Domain.Models;
 
-namespace Tournament.DbContext;
+namespace Tournament.Infrastructure.DbContext;
 
 public class ApplicationDbContext : IdentityDbContext<Participant>
 {

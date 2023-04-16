@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using Tournament.Application.Dto;
+using Tournament.Domain.Models;
 using Tournament.Dto;
-using Tournament.Models;
 
 namespace Tournament.MappingConfiguration;
 

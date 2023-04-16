@@ -1,9 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Tournament.Domain.Enums;
 using Tournament.Enums;
-using Tournament.Primitives;
 
-namespace Tournament.Models;
+namespace Tournament.Domain.Models;
 
 public sealed class Participant : IdentityUser
 {

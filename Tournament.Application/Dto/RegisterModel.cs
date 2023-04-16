@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Tournament.Domain.Enums;
 using Tournament.Enums;
-using Tournament.Validation;
 
 namespace Tournament.Dto;
 

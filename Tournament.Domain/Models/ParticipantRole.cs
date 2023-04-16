@@ -1,4 +1,4 @@
-﻿namespace Tournament.Models;
+﻿namespace Tournament.Domain.Models;
 
 public static class ParticipantRole
 {

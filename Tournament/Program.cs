@@ -1,11 +1,8 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Tournament.DbContext;
+using Tournament.Application.Interfaces;
 using Tournament.Extensions;
-using Tournament.Implementation;
+using Tournament.Infrastructure;
 using Tournament.MappingConfiguration;
 using Tournament.Middleware;
-using Tournament.Models;
 using Tournament.Options;
 using Tournament.Services;
 
@@ -17,10 +14,15 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddDbContext<ApplicationDbContext>(opt =>
-{
-    opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
-});
+builder.Services.AddInfrastructure(builder.Configuration);
+// builder.Services.AddDbContext<ApplicationDbContext>(opt =>
+// {
+//     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
+// });
+
+// builder.Services.AddIdentity<Participant, IdentityRole>()
+//     .AddEntityFrameworkStores<ApplicationDbContext>()
+//     .AddDefaultTokenProviders();
 
 builder.Services.Configure<JwtOption>(builder.Configuration.GetSection(JwtOption.Section));
 
@@ -28,10 +30,6 @@ builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<ParticipantProfile>();
 });
-
-builder.Services.AddIdentity<Participant, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

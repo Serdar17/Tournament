@@ -1,9 +1,9 @@
 ﻿using Ardalis.Result;
+using Tournament.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
-using Tournament.Dto;
-using Tournament.Models;
+using Tournament.Application.Dto;
 
-namespace Tournament.Services;
+namespace Tournament.Application.Interfaces;
 
 public interface IParticipantService
 {

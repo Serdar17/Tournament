@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Tournament.Services;
+namespace Tournament.Application.Interfaces;
 
 public interface ITokenService
 {

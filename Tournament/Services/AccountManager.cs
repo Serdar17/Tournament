@@ -2,14 +2,14 @@
 using Ardalis.Result;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Tournament.Application.Interfaces;
+using Tournament.Domain.Models;
 using Tournament.Dto;
-using Tournament.Models;
 using Tournament.Options;
-using Tournament.Services;
 
-namespace Tournament.Implementation;
+namespace Tournament.Services;
 
-public class AccountManager : IAccountManager
+public sealed class AccountManager : IAccountManager
 {
     private readonly ITokenService _tokenService;
     private readonly UserManager<Participant> _userManager;

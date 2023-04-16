@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Tournament.Enums;
+using Tournament.Domain.Enums;
 
-namespace Tournament.Dto;
+namespace Tournament.Application.Dto;
 
 public class ParticipantInfoModel
 {

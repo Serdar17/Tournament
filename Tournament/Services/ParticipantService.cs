@@ -2,13 +2,13 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
-using Tournament.Dto;
-using Tournament.Models;
-using Tournament.Services;
+using Tournament.Application.Dto;
+using Tournament.Application.Interfaces;
+using Tournament.Domain.Models;
 
-namespace Tournament.Implementation;
+namespace Tournament.Services;
 
-public class ParticipantService : IParticipantService
+public sealed class ParticipantService : IParticipantService
 {
     private readonly UserManager<Participant> _userManager;
     private readonly IMapper _mapper;
@@ -18,6 +18,7 @@ public class ParticipantService : IParticipantService
         _userManager = userManager;
         _mapper = mapper;
     }
+    
     public List<Participant> GetAll()
     {
         return _userManager.Users.ToList();
@@ -35,7 +36,8 @@ public class ParticipantService : IParticipantService
         return Result.Success(participant);
     }
 
-    public async Task<Result<ParticipantInfoModel>> PatchParticipantAsync(Guid guid, JsonPatchDocument<ParticipantInfoModel> patch)
+    public async Task<Result<ParticipantInfoModel>> PatchParticipantAsync(Guid guid, 
+        JsonPatchDocument<ParticipantInfoModel> patch)
     {
         var participant = await _userManager.FindByIdAsync(guid.ToString());
 

@@ -4,10 +4,10 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Tournament.Application.Interfaces;
 using Tournament.Options;
-using Tournament.Services;
 
-namespace Tournament.Implementation;
+namespace Tournament.Services;
 
 public class TokenService : ITokenService
 {

@@ -1,4 +1,4 @@
-﻿namespace Tournament.Primitives;
+﻿namespace Tournament.Domain.Primitives;
 
 public abstract class BaseEntity
 {
