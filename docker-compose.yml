@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
-    hostname: "192.168.192.137"
+    hostname: "192.168.235.137"
     networks:
       - tournament-dev
     depends_on:
