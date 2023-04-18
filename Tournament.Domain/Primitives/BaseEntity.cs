@@ -1,10 +1,10 @@
 ﻿namespace Tournament.Domain.Primitives;
 
-public abstract class BaseEntity
+public abstract class BaseEntity<T> 
 {
-    public int Id { get; protected set; }
+    public T Id { get; set; }
 
-    protected BaseEntity(int id) => Id = id;
+    protected BaseEntity(T id) => Id = id;
 
     protected BaseEntity() {}
 }

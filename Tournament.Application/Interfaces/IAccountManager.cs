@@ -1,5 +1,6 @@
 ﻿using Ardalis.Result;
 using Tournament.Domain.Models;
+using Tournament.Domain.Models.Participant;
 using Tournament.Dto;
 
 namespace Tournament.Application.Interfaces;

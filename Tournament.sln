@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament", "Tournament\Tournament.csproj", "{29E0FE07-F42D-419F-A9B7-10F5AA81EB45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament.WebApi", "Tournament.WebApi\Tournament.WebApi.csproj", "{29E0FE07-F42D-419F-A9B7-10F5AA81EB45}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament.Domain", "Tournament.Domain\Tournament.Domain.csproj", "{011CE53B-D3F9-4A07-99AC-1F7604B2042F}"
 EndProject

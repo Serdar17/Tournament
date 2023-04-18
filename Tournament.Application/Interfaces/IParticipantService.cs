@@ -2,6 +2,7 @@
 using Tournament.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Tournament.Application.Dto;
+using Tournament.Domain.Models.Participant;
 
 namespace Tournament.Application.Interfaces;
 

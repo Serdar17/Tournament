@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Tournament.Domain.Models;
+using Tournament.Domain.Models.Participant;
 
 namespace Tournament.Infrastructure.DbContext;
 
