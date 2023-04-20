@@ -69,6 +69,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCustomExceptionHandle();
+
 app.UseExceptionHandler("/Error");
 app.UseHsts();
 
