@@ -16,12 +16,12 @@ namespace Tournament.Controllers;
 
 public sealed class CompetitionController : ApiController
 {
-    private readonly IMediator _mediator;
+    private readonly ISender _sender;
     private readonly IMapper _mapper;
 
-    public CompetitionController(IMediator mediator, IMapper mapper)
+    public CompetitionController(ISender sender, IMapper mapper)
     {
-        _mediator = mediator;
+        _sender = sender;
         _mapper = mapper;
     }
 
@@ -36,7 +36,7 @@ public sealed class CompetitionController : ApiController
             Id = id
         };
 
-        var result = await _mediator.Send(query);
+        var result = await _sender.Send(query);
 
         return Ok(result);
     }
@@ -49,7 +49,7 @@ public sealed class CompetitionController : ApiController
     {
         var query = new GetCompetitionInfoListQuery();
 
-        var result = await _mediator.Send(query);
+        var result = await _sender.Send(query);
 
         return Ok(result);
     }
@@ -58,13 +58,16 @@ public sealed class CompetitionController : ApiController
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Manager)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<Guid>> Create([FromBody] CreateCompetitionDto createCompetitionDto)
+    public async Task<IActionResult> Create([FromBody] CreateCompetitionDto createCompetitionDto)
     {
         var command = _mapper.Map<CreateCompetitionInfoCommand>(createCompetitionDto);
 
-        var result = await _mediator.Send(command);
+        var result = await _sender.Send(command);
 
-        return Ok(result);
+        if (result.IsSuccess)
+            return Ok();
+        
+        return BadRequest(result.Errors);
     }
 
     [HttpPut("update")]
@@ -75,7 +78,7 @@ public sealed class CompetitionController : ApiController
     {
         var command = _mapper.Map<UpdateCompetitionInfoCommand>(updateCompetitionDto);
 
-        await _mediator.Send(command);
+        await _sender.Send(command);
 
         return NoContent();
     }
@@ -91,7 +94,7 @@ public sealed class CompetitionController : ApiController
             Id = id
         };
 
-        await _mediator.Send(command);
+        await _sender.Send(command);
 
         return NoContent();
     }

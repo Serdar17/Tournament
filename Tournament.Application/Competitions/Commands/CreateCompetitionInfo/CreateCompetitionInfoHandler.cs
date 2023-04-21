@@ -1,11 +1,13 @@
-﻿using MediatR;
+﻿using Ardalis.Result;
+using MediatR;
+using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Competition;
 
 namespace Tournament.Application.Competitions.Commands.CreateCompetitionInfo;
 
 public class CreateCompetitionInfoHandler : 
-    IRequestHandler<CreateCompetitionInfoCommand, Guid>
+    ICommandHandler<CreateCompetitionInfoCommand>
 {
     private readonly ICompetitionDbContext _dbContext;
 
@@ -14,7 +16,7 @@ public class CreateCompetitionInfoHandler :
         _dbContext = dbContext;
     }
 
-    public async Task<Guid> Handle(CreateCompetitionInfoCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateCompetitionInfoCommand request, CancellationToken cancellationToken)
     {
         var competitionInfo = new CompetitionInfo()
         {
@@ -29,6 +31,6 @@ public class CreateCompetitionInfoHandler :
         await _dbContext.CompetitionInfos.AddAsync(competitionInfo, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return competitionInfo.Id;
+        return Result.Success();
     }
 }

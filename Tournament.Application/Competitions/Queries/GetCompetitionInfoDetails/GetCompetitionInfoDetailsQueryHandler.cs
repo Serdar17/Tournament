@@ -1,6 +1,7 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using Ardalis.Result;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Common.Exceptions;
 using Tournament.Application.Competitions.Queries.GetCompetitionInfoDetail;
 using Tournament.Application.Interfaces;
@@ -8,7 +9,7 @@ using Tournament.Domain.Models.Competition;
 
 namespace Tournament.Application.Competitions.Queries.GetCompetitionInfoDetails;
 
-public class GetCompetitionInfoDetailsQueryHandler : IRequestHandler<GetCompetitionInfoDetailsQuery, CompetitonInfoVm>
+public class GetCompetitionInfoDetailsQueryHandler : IQueryHandler<GetCompetitionInfoDetailsQuery, CompetitonInfoVm>
 {
     private readonly ICompetitionDbContext _dbContext;
     private readonly IMapper _mapper;
@@ -19,7 +20,7 @@ public class GetCompetitionInfoDetailsQueryHandler : IRequestHandler<GetCompetit
         _mapper = mapper;
     }
     
-    public async Task<CompetitonInfoVm> Handle(GetCompetitionInfoDetailsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<CompetitonInfoVm>> Handle(GetCompetitionInfoDetailsQuery request, CancellationToken cancellationToken)
     {
         var entity = await _dbContext.CompetitionInfos
             .FirstOrDefaultAsync(item => item.Id == request.Id, cancellationToken);
@@ -29,6 +30,6 @@ public class GetCompetitionInfoDetailsQueryHandler : IRequestHandler<GetCompetit
             throw new NotFoundException(nameof(CompetitionInfo), request.Id);
         }
 
-        return _mapper.Map<CompetitonInfoVm>(entity);
+        return Result.Success(_mapper.Map<CompetitonInfoVm>(entity));
     }
 }

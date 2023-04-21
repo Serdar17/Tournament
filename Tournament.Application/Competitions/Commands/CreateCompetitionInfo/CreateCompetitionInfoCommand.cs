@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using Tournament.Application.Abstraction.Messaging;
 
 namespace Tournament.Application.Competitions.Commands.CreateCompetitionInfo;
 
-public class CreateCompetitionInfoCommand : IRequest<Guid>
+public class CreateCompetitionInfoCommand : ICommand
 {
     public Guid Id { get; set; }
 

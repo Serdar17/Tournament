@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using Tournament.Application.Abstraction.Messaging;
 
 namespace Tournament.Application.Competitions.Commands.DeleteCompetitionInfo;
 
-public class DeleteCompetitionInfoCommand : IRequest<Unit>
+public class DeleteCompetitionInfoCommand : ICommand
 {
     public Guid Id { get; set; }
 }

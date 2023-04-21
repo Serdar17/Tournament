@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using Tournament.Application.Abstraction.Messaging;
 
 namespace Tournament.Application.Competitions.Commands.UpdateCompetitionInfo;
 
-public class UpdateCompetitionInfoCommand : IRequest<Unit>
+public class UpdateCompetitionInfoCommand : ICommand
 {
     public Guid Id { get; set; }
     

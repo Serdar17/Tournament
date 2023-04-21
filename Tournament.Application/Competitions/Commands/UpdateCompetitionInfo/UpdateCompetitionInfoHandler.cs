@@ -1,12 +1,14 @@
-﻿using MediatR;
+﻿using Ardalis.Result;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Common.Exceptions;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Competition;
 
 namespace Tournament.Application.Competitions.Commands.UpdateCompetitionInfo;
 
-public class UpdateCompetitionInfoHandler : IRequestHandler<UpdateCompetitionInfoCommand, Unit>
+public class UpdateCompetitionInfoHandler : ICommandHandler<UpdateCompetitionInfoCommand>
 {
     private readonly ICompetitionDbContext _dbContext;
 
@@ -15,7 +17,7 @@ public class UpdateCompetitionInfoHandler : IRequestHandler<UpdateCompetitionInf
         _dbContext = dbContext;
     }
     
-    public async Task<Unit> Handle(UpdateCompetitionInfoCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateCompetitionInfoCommand request, CancellationToken cancellationToken)
     {
         var entity =
             await _dbContext.CompetitionInfos.FirstOrDefaultAsync(item =>
@@ -33,6 +35,6 @@ public class UpdateCompetitionInfoHandler : IRequestHandler<UpdateCompetitionInf
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        return Result.Success();
     }
 }
