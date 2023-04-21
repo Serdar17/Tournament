@@ -2,7 +2,7 @@
 using Tournament.Domain.Enums;
 using Tournament.Enums;
 
-namespace Tournament.Dto;
+namespace Tournament.Application.Dto;
 
 public class RegisterModel
 {

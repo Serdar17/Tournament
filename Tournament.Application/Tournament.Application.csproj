@@ -19,6 +19,8 @@
       <PackageReference Include="MediatR" Version="11.0.0" />
       <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5" />
+      <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+      <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 using Tournament.Application;
 using Tournament.Application.Common.Mappings;
 using Tournament.Application.Interfaces;
@@ -37,6 +39,8 @@ builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 
+builder.Services.AddSingleton<ICurrentUserService, CurrentUserServices>();
+
 #region Cors Configure
 
 builder.Services.ConfigureCors();
@@ -57,7 +61,13 @@ builder.Services.ConfigureAuthentication(builder.Configuration);
 
 #region Configure Serilog
 
-// builder.Host.ConfigureSerilog();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .WriteTo.Console()
+    .WriteTo.File("TournamentWebApiLog.txt", rollingInterval:
+        RollingInterval.Day)
+    .CreateLogger();
+builder.Host.UseSerilog();
 
 #endregion
 
@@ -74,7 +84,7 @@ app.UseCustomExceptionHandle();
 app.UseExceptionHandler("/Error");
 app.UseHsts();
 
-// app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseCors("EnableCORS");

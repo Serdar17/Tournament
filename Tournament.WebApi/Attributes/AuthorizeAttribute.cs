@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Tournament.Dto;
+using Tournament.Application.Dto;
 
 namespace Tournament.Attributes;
 

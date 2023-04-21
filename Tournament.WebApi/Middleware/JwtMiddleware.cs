@@ -47,7 +47,7 @@ public class JwtMiddleware
 
             // attach account to context on successful jwt validation
             // context.Items["User"] = _userService.GetUserDetails();
-            // context.Items["User"] = "admin";
+            context.Items["User"] = accountId;
         }
         catch
         {

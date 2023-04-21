@@ -1,4 +1,4 @@
-﻿namespace Tournament.Dto;
+﻿namespace Tournament.Application.Dto;
 
 public class Response
 {

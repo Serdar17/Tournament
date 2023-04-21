@@ -2,9 +2,9 @@
 using Ardalis.Result;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using Tournament.Application.Dto;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Participant;
-using Tournament.Dto;
 using Tournament.Options;
 
 namespace Tournament.Services;

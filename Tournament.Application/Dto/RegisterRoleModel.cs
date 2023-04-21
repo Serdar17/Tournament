@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Tournament.Dto;
+namespace Tournament.Application.Dto;
 
 public class RegisterRoleModel
 {

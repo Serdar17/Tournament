@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Tournament.Application.Dto;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models;
 using Tournament.Domain.Models.Participant;
-using Tournament.Dto;
 
 namespace Tournament.Controllers;
 
