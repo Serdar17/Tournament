@@ -5,6 +5,7 @@ using Serilog.Events;
 using Tournament.Application;
 using Tournament.Application.Common.Mappings;
 using Tournament.Application.Interfaces;
+using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Extensions;
 using Tournament.Infrastructure;
 using Tournament.Middleware;
@@ -23,6 +24,16 @@ builder.Services.AddHttpContextAccessor();
 // {
 //     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
 // });
+
+// builder.Services.AddDbContext<ApplicationDbContext>(opt =>
+// {
+//     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
+// });
+//         
+// builder.Services.AddIdentity<Participant, IdentityRole>()
+//     .AddEntityFrameworkStores<ApplicationDbContext>()
+//     .AddDefaultTokenProviders();
+
 builder.Services.AddAutoMapper( cfg =>
 {
     cfg.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Tournament.Application.Dto;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models;
-using Tournament.Domain.Models.Participant;
+using Tournament.Domain.Models.Participants;
 
 namespace Tournament.Services;
 

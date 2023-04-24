@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Tournament.Application.Common.Mappings;
-using Tournament.Application.Competitions.Commands.CreateCompetitionInfo;
+using Tournament.Application.Competitions.Commands.CreateCompetition;
 
 namespace Tournament.Models.Competition;
 
-public class CreateCompetitionDto : IMapWith<CreateCompetitionInfoCommand>
+public class CreateCompetitionDto : IMapWith<CreateCompetitionCommand>
 {
     public string Title { get; set; }
     
@@ -16,7 +16,7 @@ public class CreateCompetitionDto : IMapWith<CreateCompetitionInfoCommand>
     
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<CreateCompetitionDto, CreateCompetitionInfoCommand>()
+        profile.CreateMap<CreateCompetitionDto, CreateCompetitionCommand>()
             .ForMember(infoVm => infoVm.Title,
                 opt => opt.MapFrom(info => info.Title))
             .ForMember(infoVm => infoVm.Description,

@@ -3,13 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Tournament.Application.Competitions.Commands.CreateCompetitionInfo;
-using Tournament.Application.Competitions.Commands.DeleteCompetitionInfo;
-using Tournament.Application.Competitions.Commands.UpdateCompetitionInfo;
-using Tournament.Application.Competitions.Queries.GetCompetitionInfoDetail;
-using Tournament.Application.Competitions.Queries.GetCompetitionInfoDetails;
-using Tournament.Application.Competitions.Queries.GetCompetitionInfoList;
-using Tournament.Domain.Models.Participant;
+using Tournament.Application.Competitions.Commands.CreateCompetition;
+using Tournament.Application.Competitions.Commands.DeleteCompetition;
+using Tournament.Application.Competitions.Commands.UpdateCompetition;
+using Tournament.Application.Competitions.Queries.GetCompetitionDetails;
+using Tournament.Application.Competitions.Queries.GetCompetitionList;
+using Tournament.Domain.Models.Participants;
 using Tournament.Models.Competition;
 
 namespace Tournament.Controllers;
@@ -29,9 +28,9 @@ public sealed class CompetitionController : ApiController
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Manager)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<CompetitonInfoVm>> Get(Guid id)
+    public async Task<ActionResult<CompetitionVm>> Get(Guid id)
     {
-        var query = new GetCompetitionInfoDetailsQuery()
+        var query = new GetCompetitionDetailsQuery()
         {
             Id = id
         };
@@ -45,7 +44,7 @@ public sealed class CompetitionController : ApiController
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<CompetitionInfoListVm>> GetAll()
+    public async Task<ActionResult<CompetitionListVm>> GetAll()
     {
         var query = new GetCompetitionInfoListQuery();
 
@@ -60,7 +59,7 @@ public sealed class CompetitionController : ApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Create([FromBody] CreateCompetitionDto createCompetitionDto)
     {
-        var command = _mapper.Map<CreateCompetitionInfoCommand>(createCompetitionDto);
+        var command = _mapper.Map<CreateCompetitionCommand>(createCompetitionDto);
 
         var result = await _sender.Send(command);
 
@@ -76,7 +75,7 @@ public sealed class CompetitionController : ApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Update([FromBody] UpdateCompetitionDto updateCompetitionDto)
     {
-        var command = _mapper.Map<UpdateCompetitionInfoCommand>(updateCompetitionDto);
+        var command = _mapper.Map<UpdateCompetitionCommand>(updateCompetitionDto);
 
         await _sender.Send(command);
 
@@ -89,7 +88,7 @@ public sealed class CompetitionController : ApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var command = new DeleteCompetitionInfoCommand()
+        var command = new DeleteCompetitionCommand()
         {
             Id = id
         };

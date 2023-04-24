@@ -2,10 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Tournament.Application.Interfaces;
-using Tournament.Domain.Models.Participant;
-using Tournament.Infrastructure.Data;
+using Tournament.Application.Interfaces.DbInterfaces;
+using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Participants;
+using Tournament.Domain.Repositories;
 using Tournament.Infrastructure.DbContext;
+using Tournament.Infrastructure.Repositories;
 
 namespace Tournament.Infrastructure;
 
@@ -30,6 +32,12 @@ public static class DependencyInjection
         
         services.AddTransient<ICompetitionDbContext>(provider =>
             provider.GetService<CompetitionDbContext>());
+
+        services.AddTransient<IParticipantRepository, ParticipantRepository>();
+
+        services.AddTransient<ICompetitionRepository, CompetitionRepository>();
+
+        services.AddTransient<IPlayerRepository, PlayerRepository>();
         
         return services;
     }

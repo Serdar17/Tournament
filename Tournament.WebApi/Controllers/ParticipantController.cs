@@ -6,9 +6,7 @@ using Tournament.Application.Interfaces;
 namespace Tournament.Controllers;
 
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[ApiController]
-[Route("[controller]")]
-public class ParticipantController : ControllerBase
+public class ParticipantController : ApiController
 {
     private readonly ILogger<ParticipantController> _logger;
     private readonly IParticipantService _participantService;

@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using Tournament.Application.Common.Mappings;
-using Tournament.Application.Competitions.Commands.CreateCompetitionInfo;
-using Tournament.Application.Competitions.Commands.UpdateCompetitionInfo;
+using Tournament.Application.Competitions.Commands.UpdateCompetition;
 
 namespace Tournament.Models.Competition;
 
-public class UpdateCompetitionDto : IMapWith<UpdateCompetitionInfoCommand>
+public class UpdateCompetitionDto : IMapWith<UpdateCompetitionCommand>
 {
     public Guid Id { get; set; }
     
@@ -19,7 +18,7 @@ public class UpdateCompetitionDto : IMapWith<UpdateCompetitionInfoCommand>
     
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<UpdateCompetitionDto, UpdateCompetitionInfoCommand>()
+        profile.CreateMap<UpdateCompetitionDto, UpdateCompetitionCommand>()
             .ForMember(infoVm => infoVm.Id,
                 opt => opt.MapFrom(info => info.Id))
             .ForMember(infoVm => infoVm.Title,

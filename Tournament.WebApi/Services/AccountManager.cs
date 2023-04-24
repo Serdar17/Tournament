@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Tournament.Application.Dto;
 using Tournament.Application.Interfaces;
-using Tournament.Domain.Models.Participant;
+using Tournament.Domain.Models.Participants;
 using Tournament.Options;
 
 namespace Tournament.Services;
@@ -120,7 +120,7 @@ public sealed class AccountManager : IAccountManager
         {
             result = await _userManager.AddToRolesAsync(participant, new List<string>()
             {
-                ParticipantRole.Admin
+                ParticipantRole.Admin, ParticipantRole.Manager, ParticipantRole.Participant
             });
         }
 

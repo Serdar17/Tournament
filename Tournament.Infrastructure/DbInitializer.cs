@@ -1,5 +1,4 @@
-﻿using Tournament.Infrastructure.Data;
-using Tournament.Infrastructure.DbContext;
+﻿using Tournament.Infrastructure.DbContext;
 
 namespace Tournament.Infrastructure;
 

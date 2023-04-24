@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Tournament.Application.Interfaces;
+using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Domain.Models.Competition;
 using Tournament.Infrastructure.EntityTypeConfiguration;
 
-namespace Tournament.Infrastructure.Data;
+namespace Tournament.Infrastructure.DbContext;
 
 public sealed class CompetitionDbContext : Microsoft.EntityFrameworkCore.DbContext, ICompetitionDbContext
 {
@@ -22,6 +23,6 @@ public sealed class CompetitionDbContext : Microsoft.EntityFrameworkCore.DbConte
     
 
     public DbSet<Competition> Competitions { get; set; } = null!;
-
-    public DbSet<CompetitionInfo> CompetitionInfos { get; set; } = null!;
+    
+    public DbSet<Player> Players { get; set; } = null!;
 }
