@@ -7,8 +7,8 @@ public class CreateCompetitionInfoCommandValidator : AbstractValidator<CreateCom
     public CreateCompetitionInfoCommandValidator()
     {
         RuleFor(command => command.Title).NotEmpty();
-        // RuleFor(createCommand => createCommand.Description).NotEmpty();
+        RuleFor(createCommand => createCommand.Description).NotEmpty();
         RuleFor(command => command.StartDateTime).GreaterThanOrEqualTo(DateTime.UtcNow);
-        RuleFor(command => command.Description).NotEmpty();
+        RuleFor(command => command.PlaceDescription).NotEmpty();
     }
 }

@@ -25,10 +25,11 @@ public sealed class CompetitionController : ApiController
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Manager)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(typeof(CompetitionVm), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<CompetitionVm>> Get(Guid id)
+    public async Task<ActionResult> Get(Guid id)
     {
         var query = new GetCompetitionDetailsQuery()
         {
@@ -37,7 +38,10 @@ public sealed class CompetitionController : ApiController
 
         var result = await _sender.Send(query);
 
-        return Ok(result);
+        if (result.IsSuccess)
+            return Ok(result);
+
+        return NotFound(result.Errors.FirstOrDefault());
     }
 
     [HttpGet]
@@ -54,7 +58,7 @@ public sealed class CompetitionController : ApiController
     }
 
     [HttpPost("create")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Manager)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Create([FromBody] CreateCompetitionDto createCompetitionDto)
@@ -64,27 +68,33 @@ public sealed class CompetitionController : ApiController
         var result = await _sender.Send(command);
 
         if (result.IsSuccess)
-            return Ok();
+        {
+            return StatusCode(StatusCodes.Status201Created);
+        }
         
         return BadRequest(result.Errors);
     }
 
     [HttpPut("update")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Manager)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Update([FromBody] UpdateCompetitionDto updateCompetitionDto)
     {
         var command = _mapper.Map<UpdateCompetitionCommand>(updateCompetitionDto);
 
-        await _sender.Send(command);
+        var result = await _sender.Send(command);
 
-        return NoContent();
+        if (result.IsSuccess)
+            return NoContent();
+
+        return NotFound(result.Errors.FirstOrDefault());
     }
 
     [HttpDelete("delete/{id:guid}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Manager)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -93,8 +103,11 @@ public sealed class CompetitionController : ApiController
             Id = id
         };
 
-        await _sender.Send(command);
+        var result = await _sender.Send(command);
 
-        return NoContent();
+        if (result.IsSuccess)
+            return NoContent();
+
+        return NotFound(result.Errors.FirstOrDefault());
     }
 }

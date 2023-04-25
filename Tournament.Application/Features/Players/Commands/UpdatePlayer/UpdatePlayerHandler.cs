@@ -1,4 +1,5 @@
 ﻿using Ardalis.Result;
+using Serilog;
 using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Common.Exceptions;
 using Tournament.Domain.Models.Competition;
@@ -26,21 +27,30 @@ public class UpdatePlayerHandler : ICommandHandler<UpdatePlayerCommand>
 
         if (participant is null)
         {
-            throw new NotFoundException(nameof(Participant), request.ParticipantId);
+            Log.Information("Entity \"{Name}\" {@ParticipantId} was not found",
+                nameof(Participant), request.ParticipantId);
+            
+            return Result.NotFound($"Entity \"{nameof(Participant)}\" ({request.ParticipantId}) was not found.");
         }
 
         var competition = await _competition.GetCompetitionByIdAsync(request.CompetitionId, cancellationToken);
 
         if (competition is null)
         {
-            throw new NotFoundException(nameof(Competition), request.CompetitionId);
+            Log.Information("Entity \"{Name}\" {@CompetitionId} was not found",
+                nameof(Competition), request.CompetitionId);
+            
+            return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.CompetitionId}) was not found.");
         }
 
         var player = competition.Players.FirstOrDefault(p => p.Id.Equals(request.PlayerId));
 
         if (player is null)
         {
-            throw new NotFoundException(nameof(Player), request.PlayerId);
+            Log.Information("Entity \"{Name}\" {@PlayerId} was not found",
+                nameof(Player), request.PlayerId);
+            
+            return Result.NotFound($"Entity \"{nameof(Player)}\" ({request.PlayerId}) was not found.");
         }
 
         player.Missed = request.Missed;

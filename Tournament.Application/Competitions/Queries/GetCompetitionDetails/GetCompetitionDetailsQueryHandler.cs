@@ -1,9 +1,8 @@
 ﻿using Ardalis.Result;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Application.Common.Exceptions;
-using Tournament.Application.Interfaces;
 using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Domain.Models.Competition;
 
@@ -27,7 +26,10 @@ public class GetCompetitionDetailsQueryHandler : IQueryHandler<GetCompetitionDet
 
         if (entity is null)
         {
-            throw new NotFoundException(nameof(Competition), request.Id);
+            Log.Information("Entity \"{Name}\" {@CompetitionId} was not found",
+                nameof(Competition), request.Id);
+            
+            return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.Id}) was not found.");
         }
 
         return Result.Success(_mapper.Map<CompetitionVm>(entity));

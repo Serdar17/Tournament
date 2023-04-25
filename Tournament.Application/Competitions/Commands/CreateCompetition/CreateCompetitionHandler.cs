@@ -1,6 +1,5 @@
 ﻿using Ardalis.Result;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Application.Interfaces;
 using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Domain.Models.Competition;
 

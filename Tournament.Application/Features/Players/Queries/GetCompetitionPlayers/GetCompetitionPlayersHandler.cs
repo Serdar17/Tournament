@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
 using AutoMapper;
+using Serilog;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Application.Common.Exceptions;
 using Tournament.Domain.Models.Competition;
 using Tournament.Domain.Repositories;
 
@@ -22,9 +22,12 @@ public class GetCompetitionPlayersHandler : IQueryHandler<GetCompetitionPlayersQ
     {
         var competitions = await _competition.GetCompetitionByIdAsync(request.CompetitionId, cancellationToken);
 
-        if (_competition is null)
+        if (competitions is null)
         {
-            throw new NotFoundException(nameof(Competition), request.CompetitionId);
+            Log.Information("Entity \"{Name}\" {@CompetitionId} was not found",
+                nameof(Competition), request.CompetitionId);
+            
+            return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.CompetitionId}) was not found.");
         }
 
         var players = competitions.Players

@@ -2,6 +2,7 @@
 using System.Text.Json;
 using FluentValidation;
 using Tournament.Application.Common.Exceptions;
+using Tournament.Domain.Shared;
 
 namespace Tournament.Middleware;
 
@@ -31,14 +32,15 @@ public class CustomExceptionHandleMiddleware
         var statusCode = HttpStatusCode.InternalServerError;
         var result = string.Empty;
 
-        switch (exception)
+        switch (exception.InnerException)
         {
             case ValidationException validationException:
                 statusCode = HttpStatusCode.BadRequest;
-                result = JsonSerializer.Serialize(validationException.Errors);
+                result = HandleFailure(validationException);
                 break; 
-            case NotFoundException:
+            case NotFoundException notFoundException:
                 statusCode = HttpStatusCode.NotFound;
+                result = JsonSerializer.Serialize(new { error = notFoundException.Message });
                 break;
         }
 
@@ -51,5 +53,17 @@ public class CustomExceptionHandleMiddleware
         }
 
         return context.Response.WriteAsync(result);
+    }
+
+    private string HandleFailure(ValidationException validationException)
+    {
+        var failures = validationException.Errors
+            .Select(e => new Error(
+                e.PropertyName,
+                e.ErrorMessage))
+            .Distinct()
+            .ToArray();
+        var validationResult = ValidationResult.WithErrors(failures, "Validation Error");
+        return JsonSerializer.Serialize(validationResult);
     }
 }

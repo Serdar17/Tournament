@@ -7,7 +7,13 @@ public class UpdateCompetitionCommandValidator : AbstractValidator<UpdateCompeti
     public UpdateCompetitionCommandValidator()
     {
         RuleFor(command => command.Id).NotEqual(Guid.Empty);
+        
         RuleFor(command => command.Title).NotEmpty();
+        
+        RuleFor(command => command.Description).NotEmpty();
+        
         RuleFor(command => command.StartDateTime).GreaterThanOrEqualTo(DateTime.UtcNow);
+
+        RuleFor(command => command.PlaceDescription).NotEmpty();
     }
 }

@@ -25,7 +25,7 @@ public class TournamentController : ApiController
     [HttpGet("{id:guid}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(typeof(PlayersVm), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPlayers([FromRoute] Guid id)
     {
         var query = new GetCompetitionPlayersQuery()
@@ -38,13 +38,13 @@ public class TournamentController : ApiController
         if (result.IsSuccess)
             return Ok(result.Value);
 
-        return BadRequest();
+        return NotFound(result.Errors.FirstOrDefault());
     }
 
     [HttpPost("add")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Add([FromBody] AddPlayerDto playerDto)
     {
         var command = _mapper.Map<CreatePlayerCommand>(playerDto);
@@ -52,9 +52,9 @@ public class TournamentController : ApiController
         var result = await _sender.Send(command);
 
         if (result.IsSuccess)
-            return Ok();
+            return StatusCode(StatusCodes.Status201Created);
         
-        return BadRequest();
+        return NotFound(result.Errors.FirstOrDefault());
     }
 
     [HttpDelete("delete")]
@@ -70,6 +70,6 @@ public class TournamentController : ApiController
         if (result.IsSuccess)
             return NoContent();
 
-        return BadRequest();
+        return NotFound(result.Errors.FirstOrDefault());
     }
 }

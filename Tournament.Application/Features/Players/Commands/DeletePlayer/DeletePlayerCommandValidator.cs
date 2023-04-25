@@ -9,5 +9,7 @@ public class DeletePlayerCommandValidator : AbstractValidator<DeletePlayerComman
         RuleFor(command => command.CompetitionId).NotEqual(Guid.Empty);
 
         RuleFor(command => command.ParticipantId).NotEqual(Guid.Empty);
+
+        RuleFor(command => command.PlayerId).NotEqual(Guid.Empty);
     }
 }

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Ardalis.Result;
+using AutoMapper;
 using Tournament.Application.Common.Mappings;
 using Tournament.Domain.Models.Competition;
 

@@ -1,7 +1,5 @@
 ﻿using Ardalis.Result;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Application.Common.Exceptions;
-using Tournament.Application.Interfaces;
 using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Domain.Models.Competition;
 
@@ -23,7 +21,8 @@ public class DeleteCompetitionHandler : ICommandHandler<DeleteCompetitionCommand
 
         if (entity is null)
         {
-            throw new NotFoundException(nameof(Competition), request.Id);
+            return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.Id}) was not found.");
+            // throw new NotFoundException(nameof(Competition), request.Id);
         }
 
         _dbContext.Competitions.Remove(entity);

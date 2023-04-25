@@ -2,7 +2,6 @@
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Tournament.Application.Interfaces;
 using Tournament.Application.Interfaces.DbInterfaces;
 
 namespace Tournament.Application.Competitions.Queries.GetCompetitionList;

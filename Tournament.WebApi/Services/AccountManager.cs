@@ -105,9 +105,9 @@ public sealed class AccountManager : IAccountManager
             await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Participant));
         }
         
-        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Manager))
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Referee))
         {
-            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Manager));
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Referee));
         }
         
         if (!await _roleManager.RoleExistsAsync(ParticipantRole.Admin))
@@ -120,7 +120,7 @@ public sealed class AccountManager : IAccountManager
         {
             result = await _userManager.AddToRolesAsync(participant, new List<string>()
             {
-                ParticipantRole.Admin, ParticipantRole.Manager, ParticipantRole.Participant
+                ParticipantRole.Admin, ParticipantRole.Referee, ParticipantRole.Participant
             });
         }
 
@@ -146,7 +146,7 @@ public sealed class AccountManager : IAccountManager
         } 
         
         var roles = await _userManager.GetRolesAsync(participant);
-        if (roles.Count(role => role.Equals(ParticipantRole.Manager)) == 1)
+        if (roles.Count(role => role.Equals(ParticipantRole.Referee)) == 1)
         {
             return Result.Error("The user already has a role");
         }
@@ -156,17 +156,17 @@ public sealed class AccountManager : IAccountManager
             await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Participant));
         }
         
-        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Manager))
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Referee))
         {
-            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Manager));
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Referee));
         }
 
         IdentityResult result = null;
-        if (await _roleManager.RoleExistsAsync(ParticipantRole.Manager))
+        if (await _roleManager.RoleExistsAsync(ParticipantRole.Referee))
         {
             result = await _userManager.AddToRolesAsync(participant, new List<string>()
             {
-                ParticipantRole.Manager, ParticipantRole.Participant
+                ParticipantRole.Referee, ParticipantRole.Participant
             });
         }
         
