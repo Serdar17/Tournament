@@ -11,7 +11,7 @@ public sealed class CompetitionDbContext : Microsoft.EntityFrameworkCore.DbConte
     public CompetitionDbContext(DbContextOptions<CompetitionDbContext> options)
         : base(options)
     {
-        // Database.EnsureCreated();
+        Database.EnsureCreated();
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
