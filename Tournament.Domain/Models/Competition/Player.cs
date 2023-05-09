@@ -8,13 +8,15 @@ public sealed class Player : BaseEntity<Guid>
     
     public bool IsParticipation { get; set; }
 
+    public bool IsBlocked { get; set; }
+
     public int Scored { get; set; }
     
     public int Missed { get; set; }
 
-    public string ParticipantId { get; set; }
+    public string? ParticipantId { get; set; }
     
-    public Guid CompetitonId { get; set; }
+    public Guid CompetitionId { get; set; }
     
     public Competition? Competition { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Ardalis.Result;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Tournament.Application.Dto;
@@ -15,13 +16,15 @@ public sealed class AccountManager : IAccountManager
     private readonly UserManager<Participant> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtOption _jwtOption;
+    private readonly IMapper _mapper;
 
     public AccountManager(ITokenService tokenService, UserManager<Participant> userManager, 
-        RoleManager<IdentityRole> roleManager, IOptionsSnapshot<JwtOption> optionsSnapshot)
+        RoleManager<IdentityRole> roleManager, IOptionsSnapshot<JwtOption> optionsSnapshot, IMapper mapper)
     {
         _tokenService = tokenService;
         _userManager = userManager;
         _roleManager = roleManager;
+        _mapper = mapper;
         _jwtOption = optionsSnapshot.Value;
     }
     
@@ -30,7 +33,7 @@ public sealed class AccountManager : IAccountManager
         var userExists = await _userManager.FindByNameAsync(participant.UserName);
         if (userExists is not null)
         {
-            return Result.Error("User already exists!");
+            return Result.Error("Пользователь с такой почтой уже существует.");
         }
         
         participant.PasswordHash = _userManager.PasswordHasher.HashPassword(participant, participant.PasswordHash);
@@ -46,14 +49,14 @@ public sealed class AccountManager : IAccountManager
             Message = "User created successfully!"
         });
     }
-
-    public async Task<Result<TokenApiModel>> LoginAsync(LoginModel loginModel)
+ 
+    public async Task<Result<AuthResponse>> LoginAsync(LoginModel loginModel)
     {
-        var participant = await _userManager.FindByNameAsync(loginModel.UserName);
+        var participant = await _userManager.FindByNameAsync(loginModel.Email);
         
         if (participant is null || ! await _userManager.CheckPasswordAsync(participant, loginModel.Password))
         {
-            return Result.Error("Invalid username or password");
+            return Result.Error("Неверный логин или пароль");
         }
         
         var participantRoles = await _userManager.GetRolesAsync(participant);
@@ -61,7 +64,6 @@ public sealed class AccountManager : IAccountManager
         var authClaims = new List<Claim>()
         {
             new (ClaimTypes.Name, participant.UserName),
-            new (ClaimTypes.Email, participant.Email),
             new ("id", participant.Id)
         };
 
@@ -78,16 +80,17 @@ public sealed class AccountManager : IAccountManager
 
         await _userManager.UpdateAsync(participant);
 
-        return Result.Success(new TokenApiModel()
+        return Result.Success(new AuthResponse()
         {
             AccessToken = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
+            User = _mapper.Map<UserDto>(participant)
         });
     }
 
     public async Task<Result<Response>> RegisterAdminAsync(RegisterRoleModel registerRoleModel)
     {
-        var participant = await _userManager.FindByNameAsync(registerRoleModel.UserName);
+        var participant = await _userManager.FindByNameAsync(registerRoleModel.Email);
         
         if (participant is null)
         {
@@ -120,7 +123,7 @@ public sealed class AccountManager : IAccountManager
         {
             result = await _userManager.AddToRolesAsync(participant, new List<string>()
             {
-                ParticipantRole.Admin, ParticipantRole.Referee, ParticipantRole.Participant
+                ParticipantRole.Admin
             });
         }
 
@@ -136,9 +139,9 @@ public sealed class AccountManager : IAccountManager
         });
     }
 
-    public async Task<Result<Response>> RegisterManagerAsync(RegisterRoleModel registerRoleModel)
+    public async Task<Result<Response>> RegisterRefereeAsync(RegisterRoleModel registerRoleModel)
     {
-        var participant = await _userManager.FindByNameAsync(registerRoleModel.UserName);
+        var participant = await _userManager.FindByNameAsync(registerRoleModel.Email);
         
         if (participant is null)
         {
@@ -166,7 +169,7 @@ public sealed class AccountManager : IAccountManager
         {
             result = await _userManager.AddToRolesAsync(participant, new List<string>()
             {
-                ParticipantRole.Referee, ParticipantRole.Participant
+                ParticipantRole.Referee
             });
         }
         

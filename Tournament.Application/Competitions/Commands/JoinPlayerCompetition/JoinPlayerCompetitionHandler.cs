@@ -1,19 +1,20 @@
 ﻿using Ardalis.Result;
 using Serilog;
 using Tournament.Application.Abstraction.Messaging;
+using Tournament.Application.Features.Players.Commands.CreatePlayer;
 using Tournament.Domain.Models.Competition;
 using Tournament.Domain.Models.Participants;
 using Tournament.Domain.Repositories;
 
-namespace Tournament.Application.Features.Players.Commands.CreatePlayer;
+namespace Tournament.Application.Competitions.Commands.JoinPlayerCompetition;
 
-public class CreatePlayerHandler : ICommandHandler<CreatePlayerCommand>
+public class JoinPlayerCompetitionHandler : ICommandHandler<JoinPlayerCompetitionCommand>
 {
     private readonly IParticipantRepository _participant;
     private readonly ICompetitionRepository _competition;
     private readonly IPlayerRepository _player;
 
-    public CreatePlayerHandler(IParticipantRepository participant, ICompetitionRepository competition, 
+    public JoinPlayerCompetitionHandler(IParticipantRepository participant, ICompetitionRepository competition, 
         IPlayerRepository player)
     {
         _participant = participant;
@@ -21,7 +22,7 @@ public class CreatePlayerHandler : ICommandHandler<CreatePlayerCommand>
         _player = player;
     }
 
-    public async Task<Result> Handle(CreatePlayerCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(JoinPlayerCompetitionCommand request, CancellationToken cancellationToken)
     {
         var participant = await _participant.GetParticipantByIdAsync(request.ParticipantId.ToString());
 

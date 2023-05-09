@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Tournament.Domain.Models.Competition;
 using Tournament.Domain.Models.Participants;
 
@@ -16,14 +17,10 @@ public class ApplicationDbContext : IdentityDbContext<Participant>
     {
         base.OnModelCreating(modelBuilder);
     }
-    
-    public DbSet<Competition> Competitions { get; set; } = null!;
-    
-    public DbSet<Player> Players { get; set; } = null!;
 
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     base.OnConfiguring(optionsBuilder);
-    //     optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
-    // }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+    }
 }

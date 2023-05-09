@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Destructurama.Attributed;
 using Tournament.Domain.Enums;
-using Tournament.Enums;
 
 namespace Tournament.Application.Dto;
 
@@ -23,25 +23,18 @@ public class RegisterModel
     public Gender Gender { get; set; }
     
     [Required]
-    public DateTime BirthDate { get; set; }
+    // [Range(0, 100, ErrorMessage = "The age field must in range from 0 to 100")]
+    public int Age { get; set; }
     
     [Required]
     [EmailAddress]
     public string Email { get;  set; }
-    
-    [Required] 
-    public string UserName { get; set; }
-    
+
     [Required]
+    [LogMasked(PreserveLength = true)]
     // [MinLength(8, ErrorMessage = "The password must be longer than 8 characters")]
     public string Password { get; set; }
     
     [Required]
-    public int SchoolNumber { get; set; }
-
-    [Required]
-    public SportsCategory SportsCategory { get;  set; }
-
-    [Required]
-    public long Rating { get; set; }
+    public string SportsCategory { get;  set; }
 }

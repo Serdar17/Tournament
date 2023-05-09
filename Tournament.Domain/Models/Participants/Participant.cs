@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Tournament.Domain.Enums;
-using Tournament.Domain.Models.Competition;
-using Tournament.Enums;
 
 namespace Tournament.Domain.Models.Participants;
 
@@ -15,11 +13,11 @@ public sealed class Participant : IdentityUser
     
     public Gender Gender { get; set; }
     
-    public DateTime BirthDate { get; set; }
+    public int Age { get; set; }
     
     public int SchoolNumber { get; set; }
 
-    public SportsCategory SportsCategory { get;  set; }
+    public string SportsCategory { get;  set; }
 
     public long Rating { get; set; }
     

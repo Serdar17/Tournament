@@ -29,7 +29,7 @@ public class TokenService : ITokenService
             audience: _jwtSetting.Audience,
             claims: claims,
             notBefore: DateTime.Now,
-            expires: DateTime.Now.AddMinutes(_jwtSetting.AccessTokenExpiryDurationMinutes), 
+            expires: DateTime.Now.AddDays(_jwtSetting.AccessTokenExpiryDurationMinutes), 
             signingCredentials: credentials);  
         
         return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);

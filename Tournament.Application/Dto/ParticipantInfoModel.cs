@@ -22,12 +22,11 @@ public class ParticipantInfoModel
     public Gender Gender { get; set; }
     
     [Required]
-    public DateTime BirthDate { get; set; }
-    
-    [Required]
-    [EmailAddress]
-    public string Email { get;  set; }
-    
+    public int Age { get; set; }
+
     [Required]
     public int SchoolNumber { get; set; }
+    
+    [Required]
+    public string SportsCategory { get; set; }
 }

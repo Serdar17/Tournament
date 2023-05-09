@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Dto;
 using Tournament.Application.Interfaces;
-using Tournament.Domain.Models;
 using Tournament.Domain.Models.Participants;
 
 namespace Tournament.Controllers;
@@ -26,6 +25,9 @@ public sealed class AuthController : ApiController
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
     {
+        _logger.LogInformation("Entity from client \"{Name}\" {@RegisterModel}",
+            nameof(RegisterModel), registerModel);
+        
         var participant = _mapper.Map<Participant>(registerModel);
 
         var result = await _accountManager.RegistrationAsync(participant);
@@ -45,18 +47,19 @@ public sealed class AuthController : ApiController
 
     [HttpPost("login")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(TokenApiModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
     {
+        _logger.LogInformation("Entity from client \"{Name}\" {@LoginModel}",
+            nameof(LoginModel), loginModel);
+        
         var result = await _accountManager.LoginAsync(loginModel);
 
         if (result.IsSuccess)
         {
             return Ok(result.Value);
         }
-        
-        _logger.LogInformation("Some log!!!");
 
         return StatusCode(StatusCodes.Status400BadRequest, new Response()
         {
@@ -69,6 +72,8 @@ public sealed class AuthController : ApiController
     [HttpPost("register-admin")]
     public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRoleModel registerRoleModel)
     {
+        _logger.LogInformation("Entity from client \"{Name}\" {@RegisterRoleModel}",
+            nameof(RegisterRoleModel), registerRoleModel);
         var response = await _accountManager.RegisterAdminAsync(registerRoleModel);
 
         if (response.IsSuccess)
@@ -84,10 +89,13 @@ public sealed class AuthController : ApiController
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
-    [HttpPost("register-manager")]
+    [HttpPost("register-referee")]
     public async Task<IActionResult> RegisterManager([FromBody] RegisterRoleModel registerRoleModel)
     {
-        var response = await _accountManager.RegisterManagerAsync(registerRoleModel);
+        _logger.LogInformation("Entity from client \"{Name}\" {@RegisterRoleModel}",
+            nameof(RegisterRoleModel), registerRoleModel);
+        
+        var response = await _accountManager.RegisterRefereeAsync(registerRoleModel);
         
         if (response.IsSuccess)
         {
@@ -101,9 +109,12 @@ public sealed class AuthController : ApiController
         });
     }
 
-    [HttpPost("refresh-token")]
+    [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken(TokenApiModel tokenApiModel)
     {
+        _logger.LogInformation("Entity from client \"{Name}\" {@TokenApiModel}",
+            nameof(TokenApiModel), tokenApiModel);
+        
         var result = await _accountManager.RefreshTokenAsync(tokenApiModel);
 
         if (result.IsSuccess)

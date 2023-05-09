@@ -26,9 +26,9 @@ public class AccountController: ApiController
     [ProducesResponseType(typeof(IEnumerable<ParticipantInfoModel>), StatusCodes.Status200OK)]
     public IEnumerable<ParticipantInfoModel> GetAll()
     {
-        var participaints = _service.GetAll();
+        var participants = _service.GetAll();
 
-        var result = participaints.Select(x => _mapper.Map<ParticipantInfoModel>(x));
+        var result = participants.Select(x => _mapper.Map<ParticipantInfoModel>(x));
         
         return result;
     }
@@ -36,6 +36,7 @@ public class AccountController: ApiController
     
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ParticipantInfoModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _service.GetParticipantByIdAsync(id);
@@ -55,6 +56,7 @@ public class AccountController: ApiController
 
     [HttpPatch("{id:guid}")]
     [ProducesResponseType(typeof(ParticipantInfoModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateParticipant(Guid id, [FromBody] 
         JsonPatchDocument<ParticipantInfoModel> patch)
     {
@@ -63,7 +65,7 @@ public class AccountController: ApiController
             _logger.LogError("Patch object sent from client is null.");
             return BadRequest("Patch object is null");
         }
-
+        _logger.LogInformation("Patch object {@Object}", patch);
         var result = await _service.PatchParticipantAsync(id, patch);
 
         if (result.IsSuccess)
@@ -78,7 +80,28 @@ public class AccountController: ApiController
         });
     }
 
+    [HttpPut]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateParticipant([FromBody] UserDto userDto)
+    {
+        var result = await _service.UpdateParticipant(userDto);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+        
+        return StatusCode(StatusCodes.Status404NotFound, new Response()
+        {
+            Status = "Not found",
+            Message = result.Errors.FirstOrDefault()
+        }); 
+    }
+    
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteParticipant(Guid id)
     {
         var result = await _service.DeleteParticipantByIdAsync(id);

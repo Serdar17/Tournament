@@ -1,11 +1,10 @@
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Serilog.Events;
 using Tournament.Application;
 using Tournament.Application.Common.Mappings;
 using Tournament.Application.Interfaces;
 using Tournament.Application.Interfaces.DbInterfaces;
+using Tournament.Domain.Models.Participants;
 using Tournament.Extensions;
 using Tournament.Infrastructure;
 using Tournament.Middleware;
@@ -20,10 +19,14 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
+
 // builder.Services.AddDbContext<CompetitionDbContext>(opt =>
 // {
 //     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
 // });
+//
+// builder.Services.AddTransient<ICompetitionDbContext>(provider =>
+//     provider.GetService<CompetitionDbContext>());
 
 // builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 // {
@@ -51,6 +54,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 
 builder.Services.AddSingleton<ICurrentUserService, CurrentUserServices>();
+builder.Services.AddCoreAdmin(ParticipantRole.Admin);
 
 #region Cors Configure
 
@@ -72,13 +76,7 @@ builder.Services.ConfigureAuthentication(builder.Configuration);
 
 #region Configure Serilog
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    .WriteTo.Console()
-    .WriteTo.File("TournamentWebApiLog.txt", rollingInterval:
-        RollingInterval.Day)
-    .CreateLogger();
-builder.Host.UseSerilog();
+builder.Host.ConfigureSerilog(builder.Configuration);
 
 #endregion
 
@@ -90,6 +88,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
 app.UseCustomExceptionHandle();
 
 app.UseExceptionHandler("/Error");
@@ -101,9 +100,13 @@ app.UseHttpsRedirection();
 app.UseCors("EnableCORS");
 
 app.UseAuthentication();
+app.UseRouting();
 app.UseAuthorization();
+
+app.UseCoreAdminCustomUrl("admin");
+app.UseCoreAdminCustomTitle("Панель администратора");
 
 app.UseMiddleware<JwtMiddleware>();
 
-app.MapControllers();
+app.MapDefaultControllerRoute();
 app.Run();

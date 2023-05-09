@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tournament.Application.Interfaces.DbInterfaces;
-using Tournament.Domain.Models.Competition;
+using Tournament.Data;
 using Tournament.Domain.Models.Participants;
 using Tournament.Domain.Repositories;
 using Tournament.Infrastructure.DbContext;

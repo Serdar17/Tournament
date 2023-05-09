@@ -41,21 +41,21 @@ public class TournamentController : ApiController
         return NotFound(result.Errors.FirstOrDefault());
     }
 
-    [HttpPost("add")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Add([FromBody] AddPlayerDto playerDto)
-    {
-        var command = _mapper.Map<CreatePlayerCommand>(playerDto);
-
-        var result = await _sender.Send(command);
-
-        if (result.IsSuccess)
-            return StatusCode(StatusCodes.Status201Created);
-        
-        return NotFound(result.Errors.FirstOrDefault());
-    }
+    // [HttpPost("add")]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // [ProducesResponseType(StatusCodes.Status201Created)]
+    // [ProducesResponseType(StatusCodes.Status404NotFound)]
+    // public async Task<IActionResult> Add([FromBody] AddPlayerDto playerDto)
+    // {
+    //     var command = _mapper.Map<CreatePlayerCommand>(playerDto);
+    //
+    //     var result = await _sender.Send(command);
+    //
+    //     if (result.IsSuccess)
+    //         return StatusCode(StatusCodes.Status201Created);
+    //     
+    //     return NotFound(result.Errors.FirstOrDefault());
+    // }
 
     [HttpDelete("delete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]

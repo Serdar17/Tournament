@@ -5,9 +5,11 @@ namespace Tournament.Application.Interfaces.DbInterfaces;
 
 public interface ICompetitionDbContext
 {
-    DbSet<Competition> Competitions { get; set; }
+    DbSet<Competition> Competitions { get;  }
     
-    DbSet<Player> Players { get; set; }
+    DbSet<Player> Players { get;  }
+    
+    DbSet<GameResult> GameResults { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

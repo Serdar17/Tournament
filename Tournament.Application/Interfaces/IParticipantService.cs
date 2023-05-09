@@ -15,6 +15,8 @@ public interface IParticipantService
     public Task<Result<ParticipantInfoModel>> PatchParticipantAsync(Guid guid, 
         JsonPatchDocument<ParticipantInfoModel> patch);
 
+    public Task<Result<UserDto>> UpdateParticipant(UserDto user);
+
     public Task<Result> DeleteParticipantByIdAsync(Guid guid);
 
 }

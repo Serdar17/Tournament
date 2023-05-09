@@ -1,9 +1,12 @@
-﻿using System.Text;
+﻿using System.Reflection;
+using System.Text;
+using Destructurama;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using Serilog.Formatting.Json;
 
 namespace Tournament.Extensions;
 
@@ -57,6 +60,9 @@ public static class ServiceExtensions
                     new string[] {}
                 }
             });
+            
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         });
     }
 
@@ -83,14 +89,24 @@ public static class ServiceExtensions
         });
     }
 
-    public static void ConfigureSerilog(this IHostBuilder hostBuilder)
+    public static void ConfigureSerilog(this IHostBuilder hostBuilder, IConfiguration configuration)
     {
-        hostBuilder.UseSerilog((ctx, lc) => lc
-            .WriteTo.Console(LogEventLevel.Information,
-                outputTemplate:
-                "{Timestamp:HH:mm:ss:ms} LEVEL:[{Level}]| THREAD:|{ThreadId}| Source: |{Source}| {Message}{NewLine}{Exception}")
-            .WriteTo.Seq("http://localhost:5341")
-            .WriteTo.File("log.txt")
-            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning));
+        
+        // Log.Logger = new LoggerConfiguration()
+        //     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        //     .WriteTo.Console(LogEventLevel.Information,
+        //         outputTemplate:
+        //         "{Timestamp:HH:mm:ss:ms} LEVEL:[{Level}]| THREAD:|{ThreadId}| Source: |{Source}| {Message}{NewLine}{Exception}")
+        //     .WriteTo.File("TournamentWebApiLog.txt", rollingInterval:
+        //         RollingInterval.Day)
+        //     .WriteTo.Seq("http://localhost:5341")
+        //     .Destructure.UsingAttributes()
+        //     .CreateLogger();
+        // hostBuilder.UseSerilog();
+        
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+        hostBuilder.UseSerilog();
     }
 }

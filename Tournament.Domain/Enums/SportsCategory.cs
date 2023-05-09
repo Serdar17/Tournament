@@ -1,6 +1,5 @@
-﻿namespace Tournament.Enums;
+﻿namespace Tournament.Domain.Enums;
 
-public enum SportsCategory
+public enum SportsCategory 
 {
-    
 }

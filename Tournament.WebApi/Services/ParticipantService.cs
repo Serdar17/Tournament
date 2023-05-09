@@ -63,6 +63,27 @@ public sealed class ParticipantService : IParticipantService
         return Result.Success(participantPatch);
     }
 
+    public async Task<Result<UserDto>> UpdateParticipant(UserDto user)
+    {
+        var participant = await _userManager.FindByIdAsync(user.Id);
+
+        if (participant is null)
+        {
+            return Result.Error($"Participant with id: {user.Id.ToString()} doesn't exist in the database.");
+        }
+        
+        _mapper.Map(user, participant);
+
+        var result = await _userManager.UpdateAsync(participant);
+
+        if (!result.Succeeded)
+        {
+            return Result.Error($"Participant with id: {user.Id.ToString()} could not be updated");
+        }
+
+        return Result.Success(user);
+    }
+
     public async Task<Result> DeleteParticipantByIdAsync(Guid guid)
     {
         var participant = await _userManager.FindByIdAsync(guid.ToString());

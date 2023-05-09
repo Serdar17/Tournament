@@ -20,7 +20,12 @@ public class PlayerRepository : IPlayerRepository
         return await _dbContext.Players
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
-    
+
+    public Task<IEnumerable<Player>> GetPlayersByCompetitionId(Guid competitionId, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public void Add(Player player, CancellationToken cancellationToken = default)
     {
         _dbContext.Players.Add(player);
