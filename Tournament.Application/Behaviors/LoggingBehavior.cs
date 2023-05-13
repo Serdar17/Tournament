@@ -27,7 +27,7 @@ public class LoggingBehavior<TRequest, TResponse>
 
         var response = await next();
     
-        _logger.LogInformation($"Handled {typeof(TResponse).Name}");
+        _logger.LogInformation("Handled {Name} object {@Response}", typeof(TResponse).Name, typeof(TResponse));
                 
         return response;
     }

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Tournament.Application.Common.Mappings;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 
-namespace Tournament.Application.Competitions.Queries.GetCompetitionList;
+namespace Tournament.Application.Dto.Competitions.Create;
 
 public class CompetitionLookupDto : IMapWith<Competition>
 {

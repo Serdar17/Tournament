@@ -2,7 +2,7 @@
 using Serilog;
 using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Common.Exceptions;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Models.Participants;
 using Tournament.Domain.Repositories;
 
@@ -28,9 +28,9 @@ public class UpdatePlayerHandler : ICommandHandler<UpdatePlayerCommand>
         if (participant is null)
         {
             Log.Information("Entity \"{Name}\" {@ParticipantId} was not found",
-                nameof(Participant), request.ParticipantId);
+                nameof(ApplicationUser), request.ParticipantId);
             
-            return Result.NotFound($"Entity \"{nameof(Participant)}\" ({request.ParticipantId}) was not found.");
+            return Result.NotFound($"Entity \"{nameof(ApplicationUser)}\" ({request.ParticipantId}) was not found.");
         }
 
         var competition = await _competition.GetCompetitionByIdAsync(request.CompetitionId, cancellationToken);

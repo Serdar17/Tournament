@@ -5,7 +5,7 @@ using Tournament.Domain.Models.Participants;
 
 namespace Tournament.Application.Dto;
 
-public class UserDto : IMapWith<Participant>
+public class UserDto : IMapWith<ApplicationUser>
 {
     public string Id { get; set; }
     
@@ -27,7 +27,7 @@ public class UserDto : IMapWith<Participant>
     
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<Participant, UserDto>()
+        profile.CreateMap<ApplicationUser, UserDto>()
             .ForMember(u => u.Id,
                 opt => opt.MapFrom(info => info.Id))
             .ForMember(u => u.FirstName,
@@ -45,6 +45,5 @@ public class UserDto : IMapWith<Participant>
             .ForMember(u => u.PhoneNumber,
                 opt => opt.MapFrom(info => info.PhoneNumber))
             .ReverseMap();
-            // .ForMember(x => x.Id, x => x.Ignore())
     }
 }

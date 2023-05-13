@@ -8,9 +8,9 @@ namespace Tournament.Application.Interfaces;
 
 public interface IParticipantService
 {
-    public List<Participant> GetAll();
+    public List<ApplicationUser> GetAll();
 
-    public Task<Result<Participant>> GetParticipantByIdAsync(Guid guid);
+    public Task<Result<ApplicationUser>> GetParticipantByIdAsync(Guid guid);
 
     public Task<Result<ParticipantInfoModel>> PatchParticipantAsync(Guid guid, 
         JsonPatchDocument<ParticipantInfoModel> patch);

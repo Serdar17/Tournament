@@ -4,9 +4,9 @@ namespace Tournament.Domain.Repositories;
 
 public interface IParticipantRepository
 {
-    Task<Participant?> GetParticipantByIdAsync(string id);
+    Task<ApplicationUser?> GetParticipantByIdAsync(string id);
 
-    void Update(Participant participant);
+    void Update(ApplicationUser participant);
 
-    void Remove(Participant participant);
+    void Remove(ApplicationUser participant);
 }

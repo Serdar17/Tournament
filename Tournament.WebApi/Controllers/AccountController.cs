@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using System.Web.Http.Cors;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Dto;
@@ -32,7 +33,6 @@ public class AccountController: ApiController
         
         return result;
     }
-    
     
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ParticipantInfoModel), StatusCodes.Status200OK)]

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Destructurama.Attributed;
 
-namespace Tournament.Application.Dto;
+namespace Tournament.Application.Dto.Auth;
 
 public class LoginModel
 {

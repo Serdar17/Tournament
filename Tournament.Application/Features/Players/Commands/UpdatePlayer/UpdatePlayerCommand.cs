@@ -10,7 +10,7 @@ public class UpdatePlayerCommand : ICommand
     
     public Guid PlayerId { get; set; }
     
-    public long CurrentRating { get; set; }
+    public int CurrentRating { get; set; }
     
     public bool IsParticipation { get; set; }
 

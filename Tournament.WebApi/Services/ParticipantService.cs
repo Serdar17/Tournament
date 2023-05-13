@@ -11,21 +11,21 @@ namespace Tournament.Services;
 
 public sealed class ParticipantService : IParticipantService
 {
-    private readonly UserManager<Participant> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
     
-    public ParticipantService(UserManager<Participant> userManager, IMapper mapper)
+    public ParticipantService(UserManager<ApplicationUser> userManager, IMapper mapper)
     {
         _userManager = userManager;
         _mapper = mapper;
     }
     
-    public List<Participant> GetAll()
+    public List<ApplicationUser> GetAll()
     {
         return _userManager.Users.ToList();
     }
 
-    public async Task<Result<Participant>> GetParticipantByIdAsync(Guid guid)
+    public async Task<Result<ApplicationUser>> GetParticipantByIdAsync(Guid guid)
     {
         var participant = await _userManager.FindByIdAsync(guid.ToString());
 

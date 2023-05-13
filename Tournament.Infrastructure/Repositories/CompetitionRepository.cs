@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Tournament.Application.Interfaces.DbInterfaces;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
 
 namespace Tournament.Infrastructure.Repositories;
@@ -21,10 +21,10 @@ public class CompetitionRepository : ICompetitionRepository
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
-    public void Update(Competition competition, Player player, CancellationToken cancellationToken = default)
+    public async Task Update(Competition competition, CancellationToken cancellationToken = default)
     {
         _dbContext.Competitions.Update(competition);
-        _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public void Save(Competition competition, CancellationToken cancellationToken = default)

@@ -2,7 +2,7 @@
 using AutoMapper;
 using Serilog;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
 
 namespace Tournament.Application.Features.Players.Queries.GetCompetitionPlayers;

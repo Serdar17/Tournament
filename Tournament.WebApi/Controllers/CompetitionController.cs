@@ -7,9 +7,13 @@ using Tournament.Application.Competitions.Commands.CreateCompetition;
 using Tournament.Application.Competitions.Commands.DeleteCompetition;
 using Tournament.Application.Competitions.Commands.JoinPlayerCompetition;
 using Tournament.Application.Competitions.Commands.UpdateCompetition;
+using Tournament.Application.Competitions.Commands.UpdateRefereePlayers;
 using Tournament.Application.Competitions.Queries.GetCompetitionDetails;
 using Tournament.Application.Competitions.Queries.GetCompetitionList;
 using Tournament.Application.Competitions.Queries.GetRefereePlayers;
+using Tournament.Application.Dto.Competitions;
+using Tournament.Application.Dto.Competitions.Create;
+using Tournament.Application.Dto.Competitions.Join;
 using Tournament.Domain.Models.Participants;
 using Tournament.Models.Competition;
 using Tournament.Models.Tournament;
@@ -70,7 +74,7 @@ public sealed class CompetitionController : ApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetSchedule([FromRoute] Guid id)
-    {
+    { 
         // TODO: Сделать rest для возврата расписания текущего турнира
         throw new NotImplementedException();
     }
@@ -89,9 +93,9 @@ public sealed class CompetitionController : ApiController
         // TODO: Сделать rest для возврата все игроков тукущего турнира
         throw new NotImplementedException();
     }
-
-    [HttpGet("{id:guid}/admin/players")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Referee)]
+    
+    [HttpGet("players/{id:guid}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
     [ProducesResponseType(typeof(RefereePlayerList), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetPlayersForReferee([FromRoute] Guid id)
@@ -110,8 +114,7 @@ public sealed class CompetitionController : ApiController
     
     
     [HttpPost("create")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Referee)]
-    [Authorize(Roles = ParticipantRole.Admin)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Create([FromBody] CreateCompetitionDto createCompetitionDto)
@@ -122,7 +125,7 @@ public sealed class CompetitionController : ApiController
 
         if (result.IsSuccess)
         {
-            return StatusCode(StatusCodes.Status201Created);
+            return Ok(result.Value);
         }
         
         return BadRequest(result.Errors);
@@ -130,7 +133,7 @@ public sealed class CompetitionController : ApiController
 
     [HttpPost("join")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserWithCompetitions), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Join([FromBody] AddPlayerDto playerDto)
     {
@@ -139,14 +142,13 @@ public sealed class CompetitionController : ApiController
         var result = await _sender.Send(command);
 
         if (result.IsSuccess)
-            return StatusCode(StatusCodes.Status201Created);
+            return Ok(result.Value);
         
         return NotFound(result.Errors.FirstOrDefault());
     }
 
     [HttpPut("update")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Referee)]
-    [Authorize(Roles = ParticipantRole.Admin)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Update([FromBody] UpdateCompetitionDto updateCompetitionDto)
@@ -161,9 +163,30 @@ public sealed class CompetitionController : ApiController
         return NotFound(result.Errors.FirstOrDefault());
     }
 
+    [HttpPut("players/{id:guid}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
+    [ProducesResponseType(typeof(RefereePlayerList), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdatePLayers([FromRoute] Guid id, [FromBody] IList<RefereePlayerLookup> playerList)
+    {
+        var command = new UpdateRefereePlayersCommand()
+        {
+            CompetitionId = id,
+            Players = playerList
+        };
+
+        var result = await _sender.Send(command);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return NotFound(result.Errors.FirstOrDefault());
+    }
+
     [HttpDelete("delete/{id:guid}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Referee)]
-    [Authorize(Roles = ParticipantRole.Admin)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -177,7 +200,7 @@ public sealed class CompetitionController : ApiController
         var result = await _sender.Send(command);
 
         if (result.IsSuccess)
-            return NoContent();
+            return Ok(result.Value);
 
         return NotFound(result.Errors.FirstOrDefault());
     }

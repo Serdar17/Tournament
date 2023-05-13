@@ -1,17 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Tournament.Application.Interfaces.DbInterfaces;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 using Tournament.Infrastructure.EntityTypeConfiguration;
 
-namespace Tournament.Data;
+namespace Tournament.Infrastructure.DbContext;
 
-public sealed class CompetitionDbContext : DbContext, ICompetitionDbContext
+public sealed class CompetitionDbContext : Microsoft.EntityFrameworkCore.DbContext, ICompetitionDbContext
 {
     public CompetitionDbContext(DbContextOptions<CompetitionDbContext> options)
         : base(options)
     {
-        // Database.EnsureCreated();
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        Database.EnsureCreated();
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -20,13 +20,6 @@ public sealed class CompetitionDbContext : DbContext, ICompetitionDbContext
         base.OnModelCreating(modelBuilder);
     }
     
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
-    }
-    
-
     public DbSet<Competition> Competitions { get; set; } = null!;
     
     public DbSet<Player> Players { get; set; } = null!;

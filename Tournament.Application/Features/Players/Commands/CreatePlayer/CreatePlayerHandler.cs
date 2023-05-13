@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
 using Serilog;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Models.Participants;
 using Tournament.Domain.Repositories;
 
@@ -28,9 +28,9 @@ public class CreatePlayerHandler : ICommandHandler<CreatePlayerCommand>
         if (participant is null)
         {
             Log.Information("Entity \"{Name}\" {@ParticipantId} was not found",
-                nameof(Participant), request.ParticipantId);
+                nameof(ApplicationUser), request.ParticipantId);
             
-            return Result.NotFound($"Entity \"{nameof(Participant)}\" ({request.ParticipantId}) was not found.");
+            return Result.NotFound($"Entity \"{nameof(ApplicationUser)}\" ({request.ParticipantId}) was not found.");
         }
 
         var competition = await _competition.GetCompetitionByIdAsync(request.CompetitionId, cancellationToken);
@@ -46,7 +46,7 @@ public class CreatePlayerHandler : ICommandHandler<CreatePlayerCommand>
         var player = new Player()
         {
             Id = Guid.NewGuid(),
-            ParticipantId = participant.Id,
+            // ParticipantId = participant.Id,
             CompetitionId = competition.Id,
             Competition = competition,
             CurrentRating = participant.Rating
@@ -54,7 +54,7 @@ public class CreatePlayerHandler : ICommandHandler<CreatePlayerCommand>
         
         _player.Add(player, cancellationToken);
         
-        _competition.Update(competition, player, cancellationToken);
+        // await _competition.Update(competition, cancellationToken);
         
         return Result.Success();
     }

@@ -1,4 +1,4 @@
-﻿using Tournament.Domain.Models.Competition;
+﻿using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Domain.Repositories;
 
@@ -8,7 +8,7 @@ public interface IPlayerRepository
 
     Task<IEnumerable<Player>> GetPlayersByCompetitionId(Guid competitionId, CancellationToken cancellationToken = default);
 
-    void Add(Player player, CancellationToken cancellationToken = default);
+    Task Add(Player player, CancellationToken cancellationToken = default);
 
     void Update(Player player, CancellationToken cancellationToken = default);
 

@@ -2,13 +2,13 @@
 
 public class Error
 {
-    public string Code { get; init; }
+    public string Field { get; init; }
 
     public string Message { get; init; }
 
-    public Error(string code, string message)
+    public Error(string field, string message)
     {
-        Code = code;
+        Field = field;
         Message = message;
     }
 }

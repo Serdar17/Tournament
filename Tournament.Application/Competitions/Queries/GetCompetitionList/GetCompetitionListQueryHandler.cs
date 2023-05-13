@@ -1,12 +1,14 @@
-﻿using AutoMapper;
+﻿using Ardalis.Result;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Tournament.Application.Abstraction.Messaging;
+using Tournament.Application.Dto.Competitions.Create;
 using Tournament.Application.Interfaces.DbInterfaces;
 
 namespace Tournament.Application.Competitions.Queries.GetCompetitionList;
 
-public class GetCompetitionListQueryHandler : IRequestHandler<GetCompetitionInfoListQuery, CompetitionListVm>
+public class GetCompetitionListQueryHandler : IQueryHandler<GetCompetitionInfoListQuery, CompetitionListVm>
 {
     private readonly ICompetitionDbContext _dbContext;
     private readonly IMapper _mapper;
@@ -17,7 +19,7 @@ public class GetCompetitionListQueryHandler : IRequestHandler<GetCompetitionInfo
         _mapper = mapper;
     }
     
-    public async Task<CompetitionListVm> Handle(GetCompetitionInfoListQuery request, CancellationToken cancellationToken)
+    public async Task<Result<CompetitionListVm>> Handle(GetCompetitionInfoListQuery request, CancellationToken cancellationToken)
     {
         var entities = await _dbContext.Competitions
             .ProjectTo<CompetitionLookupDto>(_mapper.ConfigurationProvider)

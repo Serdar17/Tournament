@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Interfaces.DbInterfaces;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Application.Competitions.Queries.GetCompetitionDetails;
 

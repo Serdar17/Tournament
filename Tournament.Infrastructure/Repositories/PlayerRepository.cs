@@ -1,7 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Tournament.Application.Interfaces.DbInterfaces;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
 
 namespace Tournament.Infrastructure.Repositories;
@@ -26,21 +25,21 @@ public class PlayerRepository : IPlayerRepository
         throw new NotImplementedException();
     }
 
-    public void Add(Player player, CancellationToken cancellationToken = default)
+    public async Task Add(Player player, CancellationToken cancellationToken = default)
     {
         _dbContext.Players.Add(player);
-        _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public void Update(Player player, CancellationToken cancellationToken = default)
+    public async void Update(Player player, CancellationToken cancellationToken = default)
     {
         _dbContext.Players.Update(player);
-        _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public void Remove(Player player, CancellationToken cancellationToken = default)
+    public async void Remove(Player player, CancellationToken cancellationToken = default)
     {
         _dbContext.Players.Remove(player);
-        _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
 using AutoMapper;
 using Tournament.Application.Common.Mappings;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Application.Competitions.Queries.GetCompetitionDetails;
 
@@ -35,8 +35,6 @@ public class CompetitionVm : IMapWith<Competition>
             .ForMember(infoVm => infoVm.CreateDateTime,
                 opt => opt.MapFrom(info => info.CreationDateTime))
             .ForMember(infoVm => infoVm.PlaceDescription,
-                opt => opt.MapFrom(info => info.PlaceDescription))
-            .ForMember(infoVm => infoVm.Result,
-                opt => opt.MapFrom(info => info.Result));
+                opt => opt.MapFrom(info => info.PlaceDescription));
     }
 }

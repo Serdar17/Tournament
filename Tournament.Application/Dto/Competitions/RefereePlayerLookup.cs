@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Tournament.Application.Common.Mappings;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 
-namespace Tournament.Application.Competitions.Queries.GetRefereePlayers;
+namespace Tournament.Application.Dto.Competitions;
 
 public class RefereePlayerLookup : IMapWith<Player>
 {
@@ -23,6 +23,12 @@ public class RefereePlayerLookup : IMapWith<Player>
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Player, RefereePlayerLookup>()
+            .ForMember(infoVm => infoVm.FirstName,
+                opt => opt.MapFrom(info => info.Participant!.FirstName))
+            .ForMember(infoVm => infoVm.MiddleName,
+                opt => opt.MapFrom(info => info.Participant!.MiddleName))
+            .ForMember(infoVm => infoVm.LastName,
+                opt => opt.MapFrom(info => info.Participant!.LastName))
             .ForMember(infoVm => infoVm.PlayerId,
                 opt => opt.MapFrom(info => info.Id))
             .ForMember(infoVm => infoVm.CurrentRating,

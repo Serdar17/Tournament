@@ -1,4 +1,4 @@
-﻿namespace Tournament.Application.Competitions.Queries.GetRefereePlayers;
+﻿namespace Tournament.Application.Dto.Competitions;
 
 public class RefereePlayerList
 {

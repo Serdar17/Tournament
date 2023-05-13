@@ -1,12 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices.JavaScript;
 using Ardalis.Result;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Tournament.Domain.Shared;
 
 namespace Tournament.Controllers;
 
+[EnableCors("EnableCORS")]
 [ApiController]
 [Route("api/[controller]")]
 public class ApiController : ControllerBase

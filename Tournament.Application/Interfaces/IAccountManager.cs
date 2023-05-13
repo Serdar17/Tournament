@@ -1,5 +1,6 @@
 ﻿using Ardalis.Result;
 using Tournament.Application.Dto;
+using Tournament.Application.Dto.Auth;
 using Tournament.Domain.Models;
 using Tournament.Domain.Models.Participants;
 
@@ -7,7 +8,7 @@ namespace Tournament.Application.Interfaces;
 
 public interface IAccountManager
 {
-    public Task<Result<Response>> RegistrationAsync(Participant participant);
+    public Task<Result<Response>> RegistrationAsync(ApplicationUser participant);
 
     public Task<Result<AuthResponse>> LoginAsync(LoginModel loginModel);
 

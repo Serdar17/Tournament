@@ -4,6 +4,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Tournament.Application.Dto;
+using Tournament.Application.Dto.Auth;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Participants;
 using Tournament.Options;
@@ -13,12 +14,12 @@ namespace Tournament.Services;
 public sealed class AccountManager : IAccountManager
 {
     private readonly ITokenService _tokenService;
-    private readonly UserManager<Participant> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtOption _jwtOption;
     private readonly IMapper _mapper;
 
-    public AccountManager(ITokenService tokenService, UserManager<Participant> userManager, 
+    public AccountManager(ITokenService tokenService, UserManager<ApplicationUser> userManager, 
         RoleManager<IdentityRole> roleManager, IOptionsSnapshot<JwtOption> optionsSnapshot, IMapper mapper)
     {
         _tokenService = tokenService;
@@ -28,7 +29,7 @@ public sealed class AccountManager : IAccountManager
         _jwtOption = optionsSnapshot.Value;
     }
     
-    public async Task<Result<Response>> RegistrationAsync(Participant participant)
+    public async Task<Result<Response>> RegistrationAsync(ApplicationUser participant)
     {
         var userExists = await _userManager.FindByNameAsync(participant.UserName);
         if (userExists is not null)
@@ -37,6 +38,9 @@ public sealed class AccountManager : IAccountManager
         }
         
         participant.PasswordHash = _userManager.PasswordHasher.HashPassword(participant, participant.PasswordHash);
+        
+        participant.SetRating();
+        
         var result = await _userManager.CreateAsync(participant);
         if (!result.Succeeded)
         {

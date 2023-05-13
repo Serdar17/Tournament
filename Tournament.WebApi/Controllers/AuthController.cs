@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using System.Web.Http.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Dto;
+using Tournament.Application.Dto.Auth;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Participants;
 
@@ -28,7 +30,7 @@ public sealed class AuthController : ApiController
         _logger.LogInformation("Entity from client \"{Name}\" {@RegisterModel}",
             nameof(RegisterModel), registerModel);
         
-        var participant = _mapper.Map<Participant>(registerModel);
+        var participant = _mapper.Map<ApplicationUser>(registerModel);
 
         var result = await _accountManager.RegistrationAsync(participant);
 
@@ -44,7 +46,7 @@ public sealed class AuthController : ApiController
                 Message = result.Errors.FirstOrDefault()
             });
     }
-
+    
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
@@ -65,47 +67,6 @@ public sealed class AuthController : ApiController
         {
             Status = "Error",
             Message = result.Errors.FirstOrDefault()
-        });
-    }
-
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
-    [HttpPost("register-admin")]
-    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterRoleModel registerRoleModel)
-    {
-        _logger.LogInformation("Entity from client \"{Name}\" {@RegisterRoleModel}",
-            nameof(RegisterRoleModel), registerRoleModel);
-        var response = await _accountManager.RegisterAdminAsync(registerRoleModel);
-
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return StatusCode(StatusCodes.Status400BadRequest, new Response()
-        {
-            Status = "Error",
-            Message = response.Errors.FirstOrDefault()
-        });
-    }
-
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
-    [HttpPost("register-referee")]
-    public async Task<IActionResult> RegisterManager([FromBody] RegisterRoleModel registerRoleModel)
-    {
-        _logger.LogInformation("Entity from client \"{Name}\" {@RegisterRoleModel}",
-            nameof(RegisterRoleModel), registerRoleModel);
-        
-        var response = await _accountManager.RegisterRefereeAsync(registerRoleModel);
-        
-        if (response.IsSuccess)
-        {
-            return Ok(response.Value);
-        }
-
-        return StatusCode(StatusCodes.Status400BadRequest, new Response()
-        {
-            Status = "Error",
-            Message = response.Errors.FirstOrDefault()
         });
     }
 

@@ -9,7 +9,7 @@ public class ParticipantProfile : Profile
 {
     public ParticipantProfile()
     {
-        CreateMap<RegisterModel, Participant>()
+        CreateMap<RegisterModel, ApplicationUser>()
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
@@ -21,7 +21,7 @@ public class ParticipantProfile : Profile
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.SportsCategory, opt => opt.MapFrom(src => src.SportsCategory));
 
-        CreateMap<Participant, ParticipantInfoModel>()
+        CreateMap<ApplicationUser, ParticipantInfoModel>()
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.MiddleName, opt => opt.MapFrom(src => src.MiddleName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))

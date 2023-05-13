@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Infrastructure.EntityTypeConfiguration;
 

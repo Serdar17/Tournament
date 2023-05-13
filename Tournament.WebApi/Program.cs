@@ -1,4 +1,6 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Tournament.Application;
 using Tournament.Application.Common.Mappings;
@@ -7,12 +9,14 @@ using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Domain.Models.Participants;
 using Tournament.Extensions;
 using Tournament.Infrastructure;
+using Tournament.Data;
 using Tournament.Middleware;
 using Tournament.Options;
+using Tournament.ServiceExtensions;
 using Tournament.Services;
+using CompetitionDbContext = Tournament.Data.CompetitionDbContext;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson();
@@ -27,13 +31,13 @@ builder.Services.AddHttpContextAccessor();
 //
 // builder.Services.AddTransient<ICompetitionDbContext>(provider =>
 //     provider.GetService<CompetitionDbContext>());
-
+//
 // builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 // {
 //     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
 // });
 //         
-// builder.Services.AddIdentity<Participant, IdentityRole>()
+// builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 //     .AddEntityFrameworkStores<ApplicationDbContext>()
 //     .AddDefaultTokenProviders();
 
@@ -54,7 +58,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 
 builder.Services.AddSingleton<ICurrentUserService, CurrentUserServices>();
-builder.Services.AddCoreAdmin(ParticipantRole.Admin);
+// builder.Services.AddCoreAdmin();
 
 #region Cors Configure
 
@@ -95,18 +99,21 @@ app.UseExceptionHandler("/Error");
 app.UseHsts();
 
 app.UseSerilogRequestLogging();
-app.UseHttpsRedirection();
-
+// app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("EnableCORS");
 
 app.UseAuthentication();
-app.UseRouting();
 app.UseAuthorization();
 
-app.UseCoreAdminCustomUrl("admin");
-app.UseCoreAdminCustomTitle("Панель администратора");
+
+
+// app.UseCoreAdminCustomUrl("admin");
+// app.UseCoreAdminCustomTitle("Панель администратора");
 
 app.UseMiddleware<JwtMiddleware>();
 
-app.MapDefaultControllerRoute();
+// app.MapDefaultControllerRoute();
+app.MapControllers();
+
 app.Run();

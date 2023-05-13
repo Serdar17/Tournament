@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Tournament.Application.Common.Mappings;
-using Tournament.Domain.Models.Competition;
+using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Application.Features.Players.Queries.GetCompetitionPlayers;
 
@@ -28,9 +28,7 @@ public class CompetitionPlayerLookupDto : IMapWith<Player>
             .ForMember(infoVm => infoVm.Scored,
                 opt => opt.MapFrom(info => info.Scored))
             .ForMember(infoVm => infoVm.Missed,
-                opt => opt.MapFrom(info => info.Missed))
-            .ForMember(infoVm => infoVm.Players,
-                opt => opt.MapFrom(info => info.Players));
+                opt => opt.MapFrom(info => info.Missed));
     }
     
 }

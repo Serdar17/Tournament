@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tournament.Application.Interfaces.DbInterfaces;
-using Tournament.Data;
 using Tournament.Domain.Models.Participants;
 using Tournament.Domain.Repositories;
 using Tournament.Infrastructure.DbContext;
@@ -21,10 +20,10 @@ public static class DependencyInjection
             opt.UseNpgsql(configuration.GetValue<string>("ConnectionString:DefaultConnection"));
         });
         
-        services.AddIdentity<Participant, IdentityRole>()
+        services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-
+        
         services.AddDbContext<CompetitionDbContext>(opt =>
         {
             opt.UseNpgsql(configuration.GetValue<string>("ConnectionString:DefaultConnection"));

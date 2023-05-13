@@ -6,9 +6,20 @@ public class CreateCompetitionInfoCommandValidator : AbstractValidator<CreateCom
 {
     public CreateCompetitionInfoCommandValidator()
     {
-        RuleFor(command => command.Title).NotEmpty();
-        RuleFor(createCommand => createCommand.Description).NotEmpty();
-        RuleFor(command => command.StartDateTime).GreaterThanOrEqualTo(DateTime.UtcNow);
-        RuleFor(command => command.PlaceDescription).NotEmpty();
+        RuleFor(command => command.Title)
+            .NotEmpty()
+            .WithMessage("Поле название должно быть заполнено");
+        
+        RuleFor(createCommand => createCommand.Description)
+            .NotEmpty()
+            .WithMessage("Поле описание должно быть заполнено");
+        
+        RuleFor(command => command.StartDateTime)
+            .GreaterThanOrEqualTo(DateTime.Now)
+            .WithMessage($"Поле время не корректно, дожно быть больше чем {DateTime.Now}");
+        
+        RuleFor(command => command.PlaceDescription)
+            .NotEmpty()
+            .WithMessage("Поле описания места проведения должно быть заполнено");
     }
 }
