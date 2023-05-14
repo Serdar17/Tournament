@@ -19,9 +19,8 @@ public sealed class Player : BaseEntity<Guid>
     
     public int LoseGameCount { get; set; }
 
-    public string? ParticipantId { get; set; }
-
-    public ApplicationUser? Participant { get; set; }
+    public string? ApplicationUserId { get; set; }
+    public ApplicationUser? ApplicationUser { get; set; }
     
     public Guid CompetitionId { get; set; }
     

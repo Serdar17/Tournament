@@ -2,11 +2,13 @@
 using Ardalis.Result;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Tournament.Application.Dto;
 using Tournament.Application.Dto.Auth;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Participants;
+using Tournament.Domain.Repositories;
 using Tournament.Options;
 
 namespace Tournament.Services;
@@ -18,14 +20,16 @@ public sealed class AccountManager : IAccountManager
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtOption _jwtOption;
     private readonly IMapper _mapper;
+    private readonly ICompetitionRepository _competitionRepository;
 
-    public AccountManager(ITokenService tokenService, UserManager<ApplicationUser> userManager, 
-        RoleManager<IdentityRole> roleManager, IOptionsSnapshot<JwtOption> optionsSnapshot, IMapper mapper)
+    public AccountManager(ITokenService tokenService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole>
+        roleManager, IOptionsSnapshot<JwtOption> optionsSnapshot, IMapper mapper, ICompetitionRepository competitionRepository)
     {
         _tokenService = tokenService;
         _userManager = userManager;
         _roleManager = roleManager;
         _mapper = mapper;
+        _competitionRepository = competitionRepository;
         _jwtOption = optionsSnapshot.Value;
     }
     
@@ -56,7 +60,10 @@ public sealed class AccountManager : IAccountManager
  
     public async Task<Result<AuthResponse>> LoginAsync(LoginModel loginModel)
     {
-        var participant = await _userManager.FindByNameAsync(loginModel.Email);
+        var participant = await _userManager.Users
+            .Where(u => u.UserName == loginModel.Email)
+            .Include(u => u.Player)
+            .FirstOrDefaultAsync();
         
         if (participant is null || ! await _userManager.CheckPasswordAsync(participant, loginModel.Password))
         {
@@ -81,9 +88,9 @@ public sealed class AccountManager : IAccountManager
 
         participant.RefreshToken = refreshToken;
         participant.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtOption.RefreshTokenExpiryDurationDays);
-
+        
         await _userManager.UpdateAsync(participant);
-
+        
         return Result.Success(new AuthResponse()
         {
             AccessToken = accessToken,

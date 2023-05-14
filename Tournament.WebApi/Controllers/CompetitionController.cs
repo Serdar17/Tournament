@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Competitions.Commands.CreateCompetition;
 using Tournament.Application.Competitions.Commands.DeleteCompetition;
 using Tournament.Application.Competitions.Commands.JoinPlayerCompetition;
+using Tournament.Application.Competitions.Commands.LeaveFromCompetition;
 using Tournament.Application.Competitions.Commands.UpdateCompetition;
 using Tournament.Application.Competitions.Commands.UpdateRefereePlayers;
 using Tournament.Application.Competitions.Queries.GetCompetitionDetails;
 using Tournament.Application.Competitions.Queries.GetCompetitionList;
+using Tournament.Application.Competitions.Queries.GetJoinedPlayersById;
 using Tournament.Application.Competitions.Queries.GetRefereePlayers;
 using Tournament.Application.Dto.Competitions;
 using Tournament.Application.Dto.Competitions.Create;
@@ -35,8 +37,7 @@ public sealed class CompetitionController : ApiController
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(typeof(CompetitionVm), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult> Get(Guid id)
+    public async Task<IActionResult> Get(Guid id)
     {
         var query = new GetCompetitionDetailsQuery()
         {
@@ -53,9 +54,9 @@ public sealed class CompetitionController : ApiController
 
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CompetitionListVm), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<CompetitionListVm>> GetAll()
+    public async Task<IActionResult> GetAll()
     {
         var query = new GetCompetitionInfoListQuery();
 
@@ -80,24 +81,35 @@ public sealed class CompetitionController : ApiController
     }
     
     /// <summary>
-    /// NOT WORKING YET
+    /// WORKING !!!
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("{id:guid}/players")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(JoinedPlayerList), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPlayers([FromRoute] Guid id)
     {
-        // TODO: Сделать rest для возврата все игроков тукущего турнира
-        throw new NotImplementedException();
+        var query = new GetJoinedPlayersByIdQuery()
+        {
+            CompetitionId = id
+        };
+
+        var result = await _sender.Send(query);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return NotFound(result.Errors.FirstOrDefault());
     }
     
     [HttpGet("players/{id:guid}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
     [ProducesResponseType(typeof(RefereePlayerList), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPlayersForReferee([FromRoute] Guid id)
     {
         var query = new GetRefereePlayersListQuery() { CompetitionId = id };
@@ -115,8 +127,8 @@ public sealed class CompetitionController : ApiController
     
     [HttpPost("create")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(CompetitionListVm), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateCompetitionDto createCompetitionDto)
     {
         var command = _mapper.Map<CreateCompetitionCommand>(createCompetitionDto);
@@ -147,10 +159,29 @@ public sealed class CompetitionController : ApiController
         return NotFound(result.Errors.FirstOrDefault());
     }
 
+    [HttpPost("leave")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(typeof(UserWithCompetitions), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Leave([FromBody] LeavePlayerDto leavePlayerDto)
+    {
+        var command = _mapper.Map<LeavePlayerCompetitionCommand>(leavePlayerDto);
+        
+        var result = await _sender.Send(command);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return NotFound(result.Errors.FirstOrDefault());
+    }
+
+
     [HttpPut("update")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromBody] UpdateCompetitionDto updateCompetitionDto)
     {
         var command = _mapper.Map<UpdateCompetitionCommand>(updateCompetitionDto);
@@ -187,9 +218,8 @@ public sealed class CompetitionController : ApiController
 
     [HttpDelete("delete/{id:guid}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(CompetitionListVm), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var command = new DeleteCompetitionCommand()

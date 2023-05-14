@@ -16,18 +16,16 @@ namespace Tournament.Application.Competitions.Commands.UpdateRefereePlayers;
 public class UpdateRefereePlayersHandler : ICommandHandler<UpdateRefereePlayersCommand, RefereePlayerList>
 {
     private readonly ICompetitionRepository _competitionRepository;
-    private readonly IPlayerRepository _playerRepository;
     private readonly UserManager<ApplicationUser> _manager;
     private readonly ILogger<GetRefereePlayersListHandler> _logger;
     private readonly IMapper _mapper;
     private readonly ICompetitionDbContext _dbContext;
 
-    public UpdateRefereePlayersHandler(ICompetitionRepository repository, IPlayerRepository playerRepository, 
-        ILogger<GetRefereePlayersListHandler> logger, IMapper mapper, UserManager<ApplicationUser> manager, ICompetitionDbContext dbContext)
+    public UpdateRefereePlayersHandler(ICompetitionRepository repository, ILogger<GetRefereePlayersListHandler> logger,
+        IMapper mapper, UserManager<ApplicationUser> manager, ICompetitionDbContext dbContext)
     {
         _competitionRepository = repository;
         _logger = logger;
-        _playerRepository = playerRepository;
         _mapper = mapper;
         _manager = manager;
         _dbContext = dbContext;
@@ -61,16 +59,21 @@ public class UpdateRefereePlayersHandler : ICommandHandler<UpdateRefereePlayersC
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        var newCompetition = await _competitionRepository.GetCompetitionByIdAsync(request.CompetitionId, cancellationToken);
+        var newCompetition =  await _dbContext.Competitions
+            .Where(c => c.Id == request.CompetitionId)
+            .Include(c => c.Players)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        //var newCompetition = await _competitionRepository.GetCompetitionByIdAsync(request.CompetitionId, cancellationToken);
         
         var players = newCompetition.Players;
-
+        
         foreach (var player in players)
         {
-            player.Participant = await _manager.FindByIdAsync(player.ParticipantId);
+            player.ApplicationUser = await _manager.FindByIdAsync(player.ApplicationUserId);
         }
 
-        var entities = players
+        var entities = newCompetition.Players
             .Select(x => _mapper.Map<RefereePlayerLookup>(x))
             .ToList();
         return Result.Success(new RefereePlayerList() { Players = entities });

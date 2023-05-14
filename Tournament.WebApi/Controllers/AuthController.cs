@@ -24,6 +24,8 @@ public sealed class AuthController : ApiController
     }
     
     [HttpPost("register")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterModel registerModel)
     {

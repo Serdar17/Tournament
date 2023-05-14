@@ -12,5 +12,5 @@ public interface IPlayerRepository
 
     void Update(Player player, CancellationToken cancellationToken = default);
 
-    void Remove(Player player, CancellationToken cancellationToken = default);
+    Task Remove(Player player, CancellationToken cancellationToken = default);
 }

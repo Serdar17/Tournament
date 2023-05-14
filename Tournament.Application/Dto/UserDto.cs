@@ -24,7 +24,9 @@ public class UserDto : IMapWith<ApplicationUser>
     public int SchoolNumber { get; set; }
     
     public string SportsCategory { get;  set; }
-    
+
+    public string CompetitionId { get; set; }
+
     public void Mapping(Profile profile)
     {
         profile.CreateMap<ApplicationUser, UserDto>()
@@ -44,6 +46,8 @@ public class UserDto : IMapWith<ApplicationUser>
                 opt => opt.MapFrom(info => info.SportsCategory))
             .ForMember(u => u.PhoneNumber,
                 opt => opt.MapFrom(info => info.PhoneNumber))
+            .ForMember(u => u.CompetitionId,
+                opt => opt.MapFrom(info => info.Player.CompetitionId.ToString()))
             .ReverseMap();
     }
 }

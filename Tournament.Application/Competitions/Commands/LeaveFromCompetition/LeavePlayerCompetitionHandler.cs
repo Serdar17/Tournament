@@ -9,25 +9,26 @@ using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Models.Participants;
 using Tournament.Domain.Repositories;
 
-namespace Tournament.Application.Competitions.Commands.JoinPlayerCompetition;
+namespace Tournament.Application.Competitions.Commands.LeaveFromCompetition;
 
-public class JoinPlayerCompetitionHandler : ICommandHandler<JoinPlayerCompetitionCommand, UserDto>
+public class LeavePlayerCompetitionHandler : ICommandHandler<LeavePlayerCompetitionCommand, UserDto>
 {
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ICompetitionRepository _competition;
     private readonly IPlayerRepository _player;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
 
-    public JoinPlayerCompetitionHandler(ICompetitionRepository competition, 
-        IPlayerRepository player, UserManager<ApplicationUser> userManager, IMapper mapper)
+    public LeavePlayerCompetitionHandler(UserManager<ApplicationUser> userManager, ICompetitionRepository competition,
+        IPlayerRepository player, IMapper mapper)
     {
+        _userManager = userManager;
         _competition = competition;
         _player = player;
-        _userManager = userManager;
         _mapper = mapper;
     }
-
-    public async Task<Result<UserDto>> Handle(JoinPlayerCompetitionCommand request, CancellationToken cancellationToken)
+    
+    public async Task<Result<UserDto>> Handle(LeavePlayerCompetitionCommand request, 
+        CancellationToken cancellationToken)
     {
         var participant = _userManager.Users
             .Include(u => u.Player)
@@ -51,28 +52,25 @@ public class JoinPlayerCompetitionHandler : ICommandHandler<JoinPlayerCompetitio
             return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.CompetitionId}) was not found.");
         }
         
-        if (participant.Player is not null)
+        if (participant.Player is null)
         {
             // Log.Information("Entity \"{Name}\" {@CompetitionId} was not found",
             //     nameof(Competition), request.CompetitionId);
             
-            return Result.Error($"Пользователь с id=\'{participant.Id}\'уже зарегестрирован на " +
+            return Result.Error($"Пользователь с id=\'{participant.Id}\'отсутствует на " +
                                 $"соревнование с id=\'{competition.Id}\'");
         }
 
-        var player = new Player()
-        {
-            Id = Guid.NewGuid(),
-            CompetitionId = competition.Id,
-            Competition = competition,
-            CurrentRating = participant.Rating
-        };
-        
-        await _player.Add(player, cancellationToken);
-        
-        participant.Player = player;
+        // competition.Players.Remove(participant.Player);
+        var player = await _player.GetPlayerByIdAsync(participant.Player.Id, cancellationToken);
+        await _player.Remove(player, cancellationToken);
+        participant.Player = null;
+
+        await _competition.Update(competition, cancellationToken);
+
         await _userManager.UpdateAsync(participant);
         
         return Result.Success(_mapper.Map<UserDto>(participant));
+
     }
 }

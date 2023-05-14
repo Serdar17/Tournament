@@ -19,7 +19,6 @@ public sealed class Competition : BaseEntity<Guid>
 
     public string PlaceDescription { get; set; }
     
-    public ApplicationUser ApplicationUser { get; set; }
     public List<Player> Players { get; set; } = new();
 
     public List<GameResult> GameResults { get; set; } = new();

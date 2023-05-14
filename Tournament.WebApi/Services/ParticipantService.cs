@@ -52,6 +52,8 @@ public sealed class ParticipantService : IParticipantService
         patch.ApplyTo(participantPatch);
 
         _mapper.Map(participantPatch, participant);
+        
+        participant.SetRating();
 
         var result = await _userManager.UpdateAsync(participant);
 
@@ -69,10 +71,12 @@ public sealed class ParticipantService : IParticipantService
 
         if (participant is null)
         {
-            return Result.Error($"Participant with id: {user.Id.ToString()} doesn't exist in the database.");
+            return Result.Error($"Participant with id: {user.Id} doesn't exist in the database.");
         }
         
         _mapper.Map(user, participant);
+        
+        participant.SetRating();
 
         var result = await _userManager.UpdateAsync(participant);
 

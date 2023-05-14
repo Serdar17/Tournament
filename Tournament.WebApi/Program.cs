@@ -24,22 +24,22 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 
-// builder.Services.AddDbContext<CompetitionDbContext>(opt =>
-// {
-//     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
-// });
-//
-// builder.Services.AddTransient<ICompetitionDbContext>(provider =>
-//     provider.GetService<CompetitionDbContext>());
-//
-// builder.Services.AddDbContext<ApplicationDbContext>(opt =>
-// {
-//     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
-// });
-//         
-// builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//     .AddEntityFrameworkStores<ApplicationDbContext>()
-//     .AddDefaultTokenProviders();
+builder.Services.AddDbContext<CompetitionDbContext>(opt =>
+{
+    opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
+});
+
+builder.Services.AddTransient<ICompetitionDbContext>(provider =>
+    provider.GetService<CompetitionDbContext>());
+
+builder.Services.AddDbContext<ApplicationDbContext>(opt =>
+{
+    opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
+});
+        
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddAutoMapper( cfg =>
 {

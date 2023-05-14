@@ -26,7 +26,7 @@ public sealed class ApplicationUser : IdentityUser
     
     public DateTime RefreshTokenExpiryTime { get; set; }
 
-    public ICollection<Competition> Competitions { get; set; } = new List<Competition>();
+    public Player? Player { get; set; }
 
     public void SetRating()
     {
