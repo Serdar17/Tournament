@@ -7,9 +7,9 @@ namespace Tournament.Infrastructure.Repositories;
 
 public class CompetitionRepository : ICompetitionRepository
 {
-    private readonly ICompetitionDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
 
-    public CompetitionRepository(ICompetitionDbContext dbContext)
+    public CompetitionRepository(IApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
     }

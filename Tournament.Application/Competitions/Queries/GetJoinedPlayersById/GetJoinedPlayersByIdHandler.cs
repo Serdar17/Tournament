@@ -14,17 +14,18 @@ namespace Tournament.Application.Competitions.Queries.GetJoinedPlayersById;
 public class GetJoinedPlayersByIdHandler : IQueryHandler<GetJoinedPlayersByIdQuery, JoinedPlayerList>
 {
     private readonly ICompetitionRepository _repository;
-    private readonly UserManager<ApplicationUser> _manager;
+    private readonly IPlayerRepository _playerRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<GetRefereePlayersListHandler> _logger;
 
-    public GetJoinedPlayersByIdHandler(ICompetitionRepository repository, ILogger<GetRefereePlayersListHandler> logger,
-        UserManager<ApplicationUser> manager, IMapper mapper)
+    public GetJoinedPlayersByIdHandler(ICompetitionRepository repository, 
+        ILogger<GetRefereePlayersListHandler> logger, IMapper mapper, 
+        IPlayerRepository playerRepository)
     {
         _repository = repository;
         _logger = logger;
-        _manager = manager;
         _mapper = mapper;
+        _playerRepository = playerRepository;
     }
     
     public async Task<Result<JoinedPlayerList>> Handle(GetJoinedPlayersByIdQuery request, 
@@ -44,12 +45,7 @@ public class GetJoinedPlayersByIdHandler : IQueryHandler<GetJoinedPlayersByIdQue
         //     .Where(p => p.IsParticipation)
         //     .ToList();
         
-        var players = competition.Players.ToList();
-        
-        foreach (var player in players)
-        {
-            player.ApplicationUser = await _manager.FindByIdAsync(player.ApplicationUserId);
-        }
+        var players = await _playerRepository.GetPlayersByCompetitionId(competition.Id, cancellationToken);
         
         var entities = players
             .Select(x => _mapper.Map<JoinedPlayersLookup>(x))

@@ -9,9 +9,9 @@ namespace Tournament.Application.Competitions.Commands.UpdateCompetition;
 
 public class UpdateCompetitionHandler : ICommandHandler<UpdateCompetitionCommand>
 {
-    private readonly ICompetitionDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
 
-    public UpdateCompetitionHandler(ICompetitionDbContext dbContext)
+    public UpdateCompetitionHandler(IApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
     }

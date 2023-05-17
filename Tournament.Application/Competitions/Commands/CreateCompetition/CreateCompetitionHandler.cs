@@ -12,10 +12,10 @@ namespace Tournament.Application.Competitions.Commands.CreateCompetition;
 public class CreateCompetitionInfoHandler : 
     ICommandHandler<CreateCompetitionCommand, CompetitionListVm>
 {
-    private readonly ICompetitionDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public CreateCompetitionInfoHandler(ICompetitionDbContext dbContext, IMapper mapper)
+    public CreateCompetitionInfoHandler(IApplicationDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;

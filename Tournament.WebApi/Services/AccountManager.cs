@@ -113,22 +113,9 @@ public sealed class AccountManager : IAccountManager
         {
             return Result.Error("The user already has a role");
         }
-        
-        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Participant))
-        {
-            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Participant));
-        }
-        
-        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Referee))
-        {
-            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Referee));
-        }
-        
-        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Admin))
-        {
-            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Admin));
-        }
 
+        await CreateRolesIfNotExists();
+        
         IdentityResult result = null;
         if (await _roleManager.RoleExistsAsync(ParticipantRole.Admin))
         {
@@ -164,16 +151,8 @@ public sealed class AccountManager : IAccountManager
         {
             return Result.Error("The user already has a role");
         }
-        
-        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Participant))
-        {
-            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Participant));
-        }
-        
-        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Referee))
-        {
-            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Referee));
-        }
+
+        await CreateRolesIfNotExists();
 
         IdentityResult result = null;
         if (await _roleManager.RoleExistsAsync(ParticipantRole.Referee))
@@ -194,6 +173,24 @@ public sealed class AccountManager : IAccountManager
             Status = "Success",
             Message = "The manager role has been successfully added"
         });
+    }
+    
+    private async Task CreateRolesIfNotExists()
+    {
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Participant))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Participant));
+        }
+        
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Referee))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Referee));
+        }
+        
+        if (!await _roleManager.RoleExistsAsync(ParticipantRole.Admin))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Admin));
+        }
     }
 
     public async Task<Result<TokenApiModel>> RefreshTokenAsync(TokenApiModel tokenApiModel)

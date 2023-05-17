@@ -19,10 +19,10 @@ public class UpdateRefereePlayersHandler : ICommandHandler<UpdateRefereePlayersC
     private readonly UserManager<ApplicationUser> _manager;
     private readonly ILogger<GetRefereePlayersListHandler> _logger;
     private readonly IMapper _mapper;
-    private readonly ICompetitionDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
 
     public UpdateRefereePlayersHandler(ICompetitionRepository repository, ILogger<GetRefereePlayersListHandler> logger,
-        IMapper mapper, UserManager<ApplicationUser> manager, ICompetitionDbContext dbContext)
+        IMapper mapper, UserManager<ApplicationUser> manager, IApplicationDbContext dbContext)
     {
         _competitionRepository = repository;
         _logger = logger;

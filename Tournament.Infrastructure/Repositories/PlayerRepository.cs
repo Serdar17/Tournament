@@ -7,9 +7,9 @@ namespace Tournament.Infrastructure.Repositories;
 
 public class PlayerRepository : IPlayerRepository
 {
-    private readonly ICompetitionDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
 
-    public PlayerRepository(ICompetitionDbContext dbContext)
+    public PlayerRepository(IApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -20,9 +20,13 @@ public class PlayerRepository : IPlayerRepository
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
-    public Task<IEnumerable<Player>> GetPlayersByCompetitionId(Guid competitionId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Player>> GetPlayersByCompetitionId(Guid competitionId, 
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Players
+            .Where(p => p.CompetitionId == competitionId)
+            .Include(p => p.ApplicationUser)
+            .ToListAsync(cancellationToken: cancellationToken);
     }
 
     public async Task Add(Player player, CancellationToken cancellationToken = default)

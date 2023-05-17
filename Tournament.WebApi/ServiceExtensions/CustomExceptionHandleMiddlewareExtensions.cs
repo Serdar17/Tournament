@@ -1,6 +1,6 @@
 ﻿using Tournament.Middleware;
 
-namespace Tournament.Extensions;
+namespace Tournament.ServiceExtensions;
 
 public static class CustomExceptionHandleMiddlewareExtensions
 {

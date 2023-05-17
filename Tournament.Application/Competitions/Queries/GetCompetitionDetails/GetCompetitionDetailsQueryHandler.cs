@@ -10,10 +10,10 @@ namespace Tournament.Application.Competitions.Queries.GetCompetitionDetails;
 
 public class GetCompetitionDetailsQueryHandler : IQueryHandler<GetCompetitionDetailsQuery, CompetitionVm>
 {
-    private readonly ICompetitionDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public GetCompetitionDetailsQueryHandler(ICompetitionDbContext dbContext, IMapper mapper)
+    public GetCompetitionDetailsQueryHandler(IApplicationDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;

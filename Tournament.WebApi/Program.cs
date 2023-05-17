@@ -7,14 +7,12 @@ using Tournament.Application.Common.Mappings;
 using Tournament.Application.Interfaces;
 using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Domain.Models.Participants;
-using Tournament.Extensions;
 using Tournament.Infrastructure;
 using Tournament.Data;
 using Tournament.Middleware;
 using Tournament.Options;
 using Tournament.ServiceExtensions;
 using Tournament.Services;
-using CompetitionDbContext = Tournament.Data.CompetitionDbContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,14 +21,6 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddDbContext<CompetitionDbContext>(opt =>
-{
-    opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
-});
-
-builder.Services.AddTransient<ICompetitionDbContext>(provider =>
-    provider.GetService<CompetitionDbContext>());
 
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
@@ -41,10 +31,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddTransient<IApplicationDbContext>(provider =>
+    provider.GetService<ApplicationDbContext>());
+
 builder.Services.AddAutoMapper( cfg =>
 {
     cfg.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
-    cfg.AddProfile(new AssemblyMappingProfile(typeof(ICompetitionDbContext).Assembly));
+    cfg.AddProfile(new AssemblyMappingProfile(typeof(IApplicationDbContext).Assembly));
 });
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -56,6 +49,8 @@ builder.Services.Configure<JwtOption>(builder.Configuration.GetSection(JwtOption
 builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountManager, AccountManager>();
+
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 builder.Services.AddSingleton<ICurrentUserService, CurrentUserServices>();
 // builder.Services.AddCoreAdmin();

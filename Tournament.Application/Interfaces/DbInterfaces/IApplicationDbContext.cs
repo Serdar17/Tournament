@@ -3,7 +3,7 @@ using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Application.Interfaces.DbInterfaces;
 
-public interface ICompetitionDbContext
+public interface IApplicationDbContext
 {
     DbSet<Competition> Competitions { get;  }
     

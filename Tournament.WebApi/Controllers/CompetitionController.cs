@@ -13,6 +13,7 @@ using Tournament.Application.Competitions.Queries.GetCompetitionDetails;
 using Tournament.Application.Competitions.Queries.GetCompetitionList;
 using Tournament.Application.Competitions.Queries.GetJoinedPlayersById;
 using Tournament.Application.Competitions.Queries.GetRefereePlayers;
+using Tournament.Application.Competitions.Queries.GetScheduleByCompetitionId;
 using Tournament.Application.Dto.Competitions;
 using Tournament.Application.Dto.Competitions.Create;
 using Tournament.Application.Dto.Competitions.Join;
@@ -66,18 +67,29 @@ public sealed class CompetitionController : ApiController
     }
     
     /// <summary>
-    /// NOT WORKING YET
+    /// WORKING BETA
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     [HttpGet("{id:guid}/schedule")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetSchedule([FromRoute] Guid id)
-    { 
-        // TODO: Сделать rest для возврата расписания текущего турнира
-        throw new NotImplementedException();
+    {
+        var query = new GetScheduleByCompetitionIdQuery()
+        {
+            CompetitionId = id
+        };
+
+        var result = await _sender.Send(query);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return BadRequest(result.Errors);
     }
     
     /// <summary>
