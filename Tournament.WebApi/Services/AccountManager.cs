@@ -20,16 +20,16 @@ public sealed class AccountManager : IAccountManager
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtOption _jwtOption;
     private readonly IMapper _mapper;
-    private readonly ICompetitionRepository _competitionRepository;
 
-    public AccountManager(ITokenService tokenService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole>
-        roleManager, IOptionsSnapshot<JwtOption> optionsSnapshot, IMapper mapper, ICompetitionRepository competitionRepository)
+    public AccountManager(ITokenService tokenService, 
+        UserManager<ApplicationUser> userManager, 
+        RoleManager<IdentityRole> roleManager, 
+        IOptions<JwtOption> optionsSnapshot, IMapper mapper)
     {
         _tokenService = tokenService;
         _userManager = userManager;
         _roleManager = roleManager;
         _mapper = mapper;
-        _competitionRepository = competitionRepository;
         _jwtOption = optionsSnapshot.Value;
     }
     
@@ -114,18 +114,9 @@ public sealed class AccountManager : IAccountManager
             return Result.Error("The user already has a role");
         }
 
-        await CreateRolesIfNotExists();
+        var identityResult = await AddRolesIfNotExists(participant, ParticipantRole.Admin);
         
-        IdentityResult result = null;
-        if (await _roleManager.RoleExistsAsync(ParticipantRole.Admin))
-        {
-            result = await _userManager.AddToRolesAsync(participant, new List<string>()
-            {
-                ParticipantRole.Admin
-            });
-        }
-
-        if (result is null || !result.Succeeded)
+        if (identityResult is null || !identityResult.Succeeded)
         {
             return Result.Error("The administrator role already exists for this user");
         }
@@ -152,18 +143,9 @@ public sealed class AccountManager : IAccountManager
             return Result.Error("The user already has a role");
         }
 
-        await CreateRolesIfNotExists();
-
-        IdentityResult result = null;
-        if (await _roleManager.RoleExistsAsync(ParticipantRole.Referee))
-        {
-            result = await _userManager.AddToRolesAsync(participant, new List<string>()
-            {
-                ParticipantRole.Referee
-            });
-        }
+        var identityResult = await AddRolesIfNotExists(participant, ParticipantRole.Referee);
         
-        if (result is null || !result.Succeeded)
+        if (identityResult is null || !identityResult.Succeeded)
         {
             return Result.Error("The administrator role already exists for this user");
         }
@@ -175,7 +157,7 @@ public sealed class AccountManager : IAccountManager
         });
     }
     
-    private async Task CreateRolesIfNotExists()
+    private async Task<IdentityResult?> AddRolesIfNotExists(ApplicationUser participant, string role)
     {
         if (!await _roleManager.RoleExistsAsync(ParticipantRole.Participant))
         {
@@ -191,6 +173,17 @@ public sealed class AccountManager : IAccountManager
         {
             await _roleManager.CreateAsync(new IdentityRole(ParticipantRole.Admin));
         }
+        
+        IdentityResult? result = null;
+        if (await _roleManager.RoleExistsAsync(ParticipantRole.Admin))
+        {
+            result = await _userManager.AddToRolesAsync(participant, new List<string>()
+            {
+                role
+            });
+        }
+
+        return result;
     }
 
     public async Task<Result<TokenApiModel>> RefreshTokenAsync(TokenApiModel tokenApiModel)

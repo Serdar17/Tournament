@@ -1,5 +1,4 @@
-﻿using Tournament.Domain.Models.Participants;
-using Tournament.Domain.Primitives;
+﻿using Tournament.Domain.Primitives;
 
 namespace Tournament.Domain.Models.Competitions;
 
@@ -21,5 +20,7 @@ public sealed class Competition : BaseEntity<Guid>
     
     public List<Player> Players { get; set; } = new();
 
-    public List<GameResult> GameResults { get; set; } = new();
+    // public List<GameResult> GameResults { get; set; } = new();
+
+    public List<Schedule> Schedules { get; set; } = new();
 }

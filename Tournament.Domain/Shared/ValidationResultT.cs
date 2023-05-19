@@ -1,8 +1,6 @@
-﻿using Ardalis.Result;
+﻿namespace Tournament.Domain.Shared;
 
-namespace Tournament.Domain.Shared;
-
-public class ValidationResult<TValue> : Result, IValidationResult
+public class ValidationResult<TValue> : IValidationResult
 {
     private ValidationResult(Error[] errors) =>
         Errors = errors;

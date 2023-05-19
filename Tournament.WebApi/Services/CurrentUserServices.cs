@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Tournament.Application.Interfaces;
+﻿using Tournament.Application.Interfaces;
 
 namespace Tournament.Services;
 

@@ -3,7 +3,6 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Dto.Schedule;
-using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
 
@@ -11,22 +10,23 @@ namespace Tournament.Application.Competitions.Queries.GetScheduleByCompetitionId
 
 public class GetScheduleByCompetitionIdHandler : IQueryHandler<GetScheduleByCompetitionIdQuery, List<ScheduleDto>>
 {
-    private readonly IScheduleService _scheduleService;
     private readonly ICompetitionRepository _competitionRepository;
+    private readonly IGameResultRepository _gameResultRepository;
     private readonly IPlayerRepository _playerRepository;
     private readonly ILogger<GetScheduleByCompetitionIdHandler> _logger;
     private readonly IMapper _mapper;
 
-    public GetScheduleByCompetitionIdHandler(IScheduleService schedule, 
+    public GetScheduleByCompetitionIdHandler( 
         ICompetitionRepository competitionRepository, 
-        ILogger<GetScheduleByCompetitionIdHandler> logger, IMapper mapper, 
-        IPlayerRepository playerRepository)
+        ILogger<GetScheduleByCompetitionIdHandler> logger, 
+        IPlayerRepository playerRepository, 
+        IGameResultRepository gameResultRepository, IMapper mapper)
     {
-        _scheduleService = schedule;
         _competitionRepository = competitionRepository;
         _logger = logger;
-        _mapper = mapper;
         _playerRepository = playerRepository;
+        _gameResultRepository = gameResultRepository;
+        _mapper = mapper;
     }
 
     public async Task<Result<List<ScheduleDto>>> Handle(GetScheduleByCompetitionIdQuery request, 
@@ -42,17 +42,25 @@ public class GetScheduleByCompetitionIdHandler : IQueryHandler<GetScheduleByComp
             return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.CompetitionId}) was not found.");
         }
 
-        var players = await _playerRepository.GetPlayersByCompetitionId(competition.Id, cancellationToken);
-        var pairs = await _scheduleService.GenerateSchedule(players.ToList());
-        
         var result = new List<ScheduleDto>();
         var currentTableNumber = 1;
-        foreach (var pair in pairs)
+        foreach (var schedule in competition.Schedules)
         {
-            result.Add(new ScheduleDto(
-                _mapper.Map<PlayerDto>(pair.Item1), 
-                _mapper.Map<PlayerDto>(pair.Item2), 
-                currentTableNumber));
+            var p1 = await _playerRepository.GetPlayerByIdAsync(schedule.FirstPlayerId, cancellationToken);
+            var p2 = await _playerRepository.GetPlayerByIdAsync(schedule.SecondPlayerId, cancellationToken);
+            
+            var scheduleDto = new ScheduleDto(
+                _mapper.Map<PlayerDto>(p1), 
+                _mapper.Map<PlayerDto>(p2), 
+                currentTableNumber);
+            
+            if (schedule.HasPlayed)
+            {
+                scheduleDto.FirstPlayerScore = schedule.FirstPlayerScore;
+                scheduleDto.SecondPlayerScore = schedule.SecondPlayerScore;
+            }
+            result.Add(scheduleDto);
+            
             currentTableNumber = currentTableNumber == competition.TableCount
                 ? 1
                 : currentTableNumber + 1;

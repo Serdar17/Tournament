@@ -91,13 +91,7 @@ public sealed class CompetitionController : ApiController
 
         return BadRequest(result.Errors);
     }
-    
-    /// <summary>
-    /// WORKING !!!
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
+
     [HttpGet("{id:guid}/players")]
     [ProducesResponseType(typeof(JoinedPlayerList), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

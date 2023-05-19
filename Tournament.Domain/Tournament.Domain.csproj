@@ -7,8 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Ardalis.Result" Version="7.0.0" />
-      <PackageReference Include="Destructurama.Attributed" Version="3.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
     </ItemGroup>
 

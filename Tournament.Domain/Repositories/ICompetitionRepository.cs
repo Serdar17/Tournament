@@ -8,7 +8,5 @@ public interface ICompetitionRepository
 
     Task Update(Competition competition, CancellationToken cancellationToken = default);
 
-    void Save(Competition competition, CancellationToken cancellationToken = default);
-
     void Remove(Competition competition, CancellationToken cancellationToken = default);
 }

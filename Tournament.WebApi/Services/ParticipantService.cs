@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Tournament.Application.Dto;
 using Tournament.Application.Interfaces;
-using Tournament.Domain.Models;
 using Tournament.Domain.Models.Participants;
 
 namespace Tournament.Services;
@@ -82,7 +81,7 @@ public sealed class ParticipantService : IParticipantService
 
         if (!result.Succeeded)
         {
-            return Result.Error($"Participant with id: {user.Id.ToString()} could not be updated");
+            return Result.Error($"Participant with id: {user.Id} could not be updated");
         }
 
         return Result.Success(user);

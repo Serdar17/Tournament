@@ -9,7 +9,9 @@ public interface IApplicationDbContext
     
     DbSet<Player> Players { get;  }
     
-    DbSet<GameResult> GameResults { get; }
+    // DbSet<GameResult> GameResults { get; }
+    
+    DbSet<Schedule> Schedules { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

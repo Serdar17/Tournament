@@ -36,6 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Data" />
       <Folder Include="Dto" />
       <Folder Include="Migrations" />
       <Folder Include="wwwroot" />

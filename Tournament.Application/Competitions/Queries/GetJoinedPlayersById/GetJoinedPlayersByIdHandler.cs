@@ -1,12 +1,10 @@
 ﻿using Ardalis.Result;
 using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Competitions.Queries.GetRefereePlayers;
 using Tournament.Application.Dto.Competitions.Join;
 using Tournament.Domain.Models.Competitions;
-using Tournament.Domain.Models.Participants;
 using Tournament.Domain.Repositories;
 
 namespace Tournament.Application.Competitions.Queries.GetJoinedPlayersById;

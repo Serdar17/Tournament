@@ -3,9 +3,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Tournament.Application.Features.Players.Commands.CreatePlayer;
 using Tournament.Application.Features.Players.Commands.DeletePlayer;
 using Tournament.Application.Features.Players.Queries.GetCompetitionPlayers;
+using Tournament.Application.Tournament.Commands;
 using Tournament.Domain.Models.Participants;
 using Tournament.Models.Tournament;
 
@@ -37,6 +37,25 @@ public class TournamentController : ApiController
 
         if (result.IsSuccess)
             return Ok(result.Value);
+
+        return NotFound(result.Errors.FirstOrDefault());
+    }
+    
+    [HttpPost("competition/generate-schedule")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GenerateSchedule([FromBody] CompetitionDto competitionDto)
+    {
+        var command = new GenerateScheduleCommand()
+        {
+            CompetitionId = competitionDto.CompetitionId
+        };
+
+        var result = await _sender.Send(command);
+
+        if (result.IsSuccess)
+            return StatusCode(StatusCodes.Status201Created);
 
         return NotFound(result.Errors.FirstOrDefault());
     }

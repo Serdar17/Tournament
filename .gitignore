@@ -4,6 +4,7 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 Tournament.WebApi/Migrations
+Tournament.Infrastructure/Migrations
 .idea
 *.txt
 *.log

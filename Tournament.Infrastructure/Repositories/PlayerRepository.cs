@@ -17,6 +17,7 @@ public class PlayerRepository : IPlayerRepository
     public async Task<Player?> GetPlayerByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Players
+            .Include(p => p.ApplicationUser)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 

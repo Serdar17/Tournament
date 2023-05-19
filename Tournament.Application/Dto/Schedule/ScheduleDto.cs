@@ -14,4 +14,10 @@ public class ScheduleDto
     public PlayerDto SecondPlayer { get; set; }
 
     public int TableNumber { get; set; }
+    
+    public bool HasPlayer { get; set; }
+
+    public int FirstPlayerScore { get; set; }
+
+    public int SecondPlayerScore { get; set; }
 }

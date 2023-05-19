@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Tournament.Infrastructure.EntityTypeConfiguration;
+namespace Tournament.Infrastructure.EntityTypeConfigurations;
 
 public class IdentityUserTokenConfiguration : IEntityTypeConfiguration<IdentityUserToken<string>>
 {

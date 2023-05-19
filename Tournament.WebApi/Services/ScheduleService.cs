@@ -5,7 +5,7 @@ namespace Tournament.Services;
 
 public class ScheduleService : IScheduleService
 {
-    public async Task<List<(Player, Player)>> GenerateSchedule(List<Player> players)
+    public List<(Player, Player)> GenerateSchedule(List<Player> players)
     {
         // var removedPlayers = new List<Player>();
         players = players.Count % 2 != 0 
@@ -17,7 +17,7 @@ public class ScheduleService : IScheduleService
         return pairs;
     }
     
-    public List<Player> RemovePlayer(List<Player> players)
+    private List<Player> RemovePlayer(List<Player> players)
     {
         var gameCount = players.Select(p => p.PlayedGames.Count).Max();
 
@@ -47,7 +47,7 @@ public class ScheduleService : IScheduleService
         return players;
     }
 
-    public List<(Player, Player)> GeneratePairs(List<Player> players)
+    private List<(Player, Player)> GeneratePairs(List<Player> players)
     {
         var result = new List<(Player, Player)>();
         var set = new HashSet<Player>(players);

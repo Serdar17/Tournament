@@ -17,7 +17,8 @@ public class CompetitionRepository : ICompetitionRepository
     public async Task<Competition?> GetCompetitionByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Competitions
-            .Include(p => p.Players)
+            .Include(c => c.Players)
+            .Include(c => c.Schedules)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
@@ -25,12 +26,6 @@ public class CompetitionRepository : ICompetitionRepository
     {
         _dbContext.Competitions.Update(competition);
         await _dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    public void Save(Competition competition, CancellationToken cancellationToken = default)
-    {
-        _dbContext.Competitions.Update(competition);
-        _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public void Remove(Competition competition, CancellationToken cancellationToken = default)

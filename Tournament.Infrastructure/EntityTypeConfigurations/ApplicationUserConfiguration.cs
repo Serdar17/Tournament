@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Models.Participants;
 
-namespace Tournament.Infrastructure.EntityTypeConfiguration;
+namespace Tournament.Infrastructure.EntityTypeConfigurations;
 
 public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {

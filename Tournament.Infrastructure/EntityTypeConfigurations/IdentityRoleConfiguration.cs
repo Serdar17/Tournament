@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Tournament.Infrastructure.EntityTypeConfiguration;
+namespace Tournament.Infrastructure.EntityTypeConfigurations;
 
 public class IdentityRoleConfiguration : IEntityTypeConfiguration<IdentityRole<string>>
 {
