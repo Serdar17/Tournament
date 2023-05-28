@@ -19,7 +19,9 @@ public class CompetitionVm : IMapWith<Competition>
 
     public string PlaceDescription { get; set; }
     
-    public string? Result { get; set; }
+    public int TableCount { get; set; }
+    
+    public int RoundsCount { get; set; }
 
     public void Mapping(Profile profile)
     {
@@ -35,6 +37,10 @@ public class CompetitionVm : IMapWith<Competition>
             .ForMember(infoVm => infoVm.CreateDateTime,
                 opt => opt.MapFrom(info => info.CreationDateTime))
             .ForMember(infoVm => infoVm.PlaceDescription,
-                opt => opt.MapFrom(info => info.PlaceDescription));
+                opt => opt.MapFrom(info => info.PlaceDescription))
+            .ForMember(infoVm => infoVm.TableCount,
+                opt => opt.MapFrom(info => info.TableCount))
+            .ForMember(infoVm => infoVm.RoundsCount,
+                opt => opt.MapFrom(info => info.RoundsCount));
     }
 }

@@ -3,7 +3,7 @@ using Tournament.Domain.Primitives;
 
 namespace Tournament.Domain.Models.Competitions;
 
-public sealed class Player : BaseEntity<Guid>
+public sealed class Player : BaseEntity<Guid>  
 {
     public int CurrentRating { get; set; }
     
@@ -19,6 +19,8 @@ public sealed class Player : BaseEntity<Guid>
     
     public int LoseGameCount { get; set; }
 
+    public int Total => Scored + Missed;
+
     public string? ApplicationUserId { get; set; }
     public ApplicationUser? ApplicationUser { get; set; }
     
@@ -27,4 +29,16 @@ public sealed class Player : BaseEntity<Guid>
     public Competition? Competition { get; set; }
 
     public List<Guid> PlayedGames { get; set; } = new();
+
+    public void SetScore(int score, int missed, Guid secondPlayerId)
+    {
+        if (score > missed)
+            WinGameCount += 1;
+        else
+            LoseGameCount += 1;
+        
+        Scored += score;
+        Missed += missed;
+        PlayedGames.Add(secondPlayerId);
+    }
 }

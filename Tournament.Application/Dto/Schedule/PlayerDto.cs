@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Tournament.Application.Common.Mappings;
-using Tournament.Application.Dto.Competitions;
 using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Application.Dto.Schedule;

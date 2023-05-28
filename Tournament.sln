@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament.Application", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament.Infrastructure", "Tournament.Infrastructure\Tournament.Infrastructure.csproj", "{17AC817B-27A2-4550-B548-FAE900699C6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tournament.Calculation", "Tournament.Calculation\Tournament.Calculation.csproj", "{7A4938DB-ED46-4134-B0AE-75159BFAA490}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{17AC817B-27A2-4550-B548-FAE900699C6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17AC817B-27A2-4550-B548-FAE900699C6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17AC817B-27A2-4550-B548-FAE900699C6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A4938DB-ED46-4134-B0AE-75159BFAA490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A4938DB-ED46-4134-B0AE-75159BFAA490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A4938DB-ED46-4134-B0AE-75159BFAA490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A4938DB-ED46-4134-B0AE-75159BFAA490}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

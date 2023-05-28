@@ -20,7 +20,18 @@ public sealed class Competition : BaseEntity<Guid>
     
     public List<Player> Players { get; set; } = new();
 
-    // public List<GameResult> GameResults { get; set; } = new();
+    public List<MatchResult> MatchResults { get; set; } = new();
 
     public List<Schedule> Schedules { get; set; } = new();
+
+    public void UpdateFields(string title, string description, DateTime startDateTime, 
+        string placeDescription, int tableCount, int roundsCount)
+    {
+        Title = title;
+        Description = description;
+        StartDateTime = startDateTime;
+        PlaceDescription = placeDescription;
+        TableCount = tableCount;
+        RoundsCount = roundsCount;
+    }
 }

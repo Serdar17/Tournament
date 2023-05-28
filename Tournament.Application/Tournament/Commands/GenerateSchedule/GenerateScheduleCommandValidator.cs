@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Tournament.Application.Tournament.Commands;
+namespace Tournament.Application.Tournament.Commands.GenerateSchedule;
 
 public class GenerateScheduleCommandValidator : AbstractValidator<GenerateScheduleCommand>
 {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Tournament.Domain.Enums;
 
-namespace Tournament.Application.Dto;
+namespace Tournament.Application.Dto.Account;
 
 public class ParticipantInfoModel
 {
@@ -29,4 +29,6 @@ public class ParticipantInfoModel
     
     [Required]
     public string SportsCategory { get; set; }
+
+    public List<MatchResultModel> MatchResultModels { get; set; } = new();
 }

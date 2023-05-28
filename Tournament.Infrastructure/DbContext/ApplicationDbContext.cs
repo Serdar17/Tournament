@@ -11,7 +11,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        Database.EnsureCreatedAsync();
+        // Database.EnsureDeletedAsync();
+        // Database.EnsureCreatedAsync();
+        Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder builder) =>
@@ -20,6 +22,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Competition> Competitions { get; set; } = null!;
 
     public DbSet<Player> Players { get; set; } = null!;
+
+    public DbSet<MatchResult> MatchResults { get; set; } = null!;
 
     public DbSet<Schedule> Schedules { get; set; } = null!;
 }

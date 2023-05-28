@@ -16,18 +16,6 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 
-// builder.Services.AddDbContext<ApplicationDbContext>(opt =>
-// {
-//     opt.UseNpgsql(builder.Configuration.GetValue<string>("ConnectionString:DefaultConnection"));
-// });
-//         
-// builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//     .AddEntityFrameworkStores<ApplicationDbContext>()
-//     .AddDefaultTokenProviders();
-//
-// builder.Services.AddTransient<IApplicationDbContext>(provider =>
-//     provider.GetService<ApplicationDbContext>());
-
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
@@ -42,7 +30,7 @@ builder.Services.Configure<JwtOption>(builder.Configuration.GetSection(JwtOption
 
 builder.Services.AddServices();
 
-// builder.Services.AddCoreAdmin();
+builder.Services.AddCoreAdmin();
 
 #region Cors Configure
 
@@ -90,10 +78,8 @@ app.UseCors("EnableCORS");
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-
-// app.UseCoreAdminCustomUrl("admin");
-// app.UseCoreAdminCustomTitle("Панель администратора");
+app.UseCoreAdminCustomUrl("admin");
+app.UseCoreAdminCustomTitle("Панель администратора");
 
 app.UseMiddleware<JwtMiddleware>();
 

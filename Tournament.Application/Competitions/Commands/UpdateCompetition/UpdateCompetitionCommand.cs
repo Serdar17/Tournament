@@ -13,4 +13,8 @@ public class UpdateCompetitionCommand : ICommand
     public DateTime StartDateTime { get; set; }
     
     public string PlaceDescription { get; set; }
+    
+    public int TableCount { get; set; }
+    
+    public int RoundsCount { get; set; }
 }

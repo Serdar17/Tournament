@@ -5,7 +5,7 @@ using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
 
-namespace Tournament.Application.Tournament.Commands;
+namespace Tournament.Application.Tournament.Commands.GenerateSchedule;
 
 public class GenerateScheduleHandler : ICommandHandler<GenerateScheduleCommand>
 {
@@ -55,7 +55,7 @@ public class GenerateScheduleHandler : ICommandHandler<GenerateScheduleCommand>
                 Competition = competition
             };
             
-            _scheduleRepository.Add(schedule);
+            await _scheduleRepository.AddAsync(schedule, cancellationToken);
         }
 
         await _scheduleRepository.SaveAsync(cancellationToken);

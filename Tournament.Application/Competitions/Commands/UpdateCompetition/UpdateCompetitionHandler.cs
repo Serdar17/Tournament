@@ -18,22 +18,20 @@ public class UpdateCompetitionHandler : ICommandHandler<UpdateCompetitionCommand
     
     public async Task<Result> Handle(UpdateCompetitionCommand request, CancellationToken cancellationToken)
     {
-        var entity =
+        var competition =
             await _dbContext.Competitions.FirstOrDefaultAsync(item =>
                 item.Id == request.Id, cancellationToken);
 
-        if (entity is null)
+        if (competition is null)
         {
             Log.Information("Entity \"{Name}\" {@CompetitionId} was not found",
                 nameof(Competition), request.Id);
             
             return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.Id}) was not found.");
         }
-
-        entity.Title = request.Title;
-        entity.Description = request.Description;
-        entity.StartDateTime = request.StartDateTime;
-        entity.PlaceDescription = request.PlaceDescription;
+        
+        competition.UpdateFields(request.Title, request.Description, request.StartDateTime, 
+            request.PlaceDescription, request.TableCount, request.RoundsCount);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

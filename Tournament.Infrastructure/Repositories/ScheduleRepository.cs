@@ -1,4 +1,5 @@
-﻿using Tournament.Application.Interfaces.DbInterfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
 
@@ -13,9 +14,27 @@ public class ScheduleRepository : IScheduleRepository
         _dbContext = dbContext;
     }
 
-    public void Add(Schedule schedule)
+    public async Task AddAsync(Schedule schedule, CancellationToken cancellationToken = default)
     {
-        _dbContext.Schedules.Add(schedule);
+        await _dbContext.Schedules.AddAsync(schedule, cancellationToken);
+    }
+
+    public async Task<Schedule?> GetScheduleByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext
+            .Schedules
+            .Where(x => x.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public IEnumerable<Schedule> GetSchedulesByCompetitionId(Guid competitionId, Guid playerId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Update(Schedule schedule)
+    {
+        _dbContext.Schedules.Update(schedule);
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)

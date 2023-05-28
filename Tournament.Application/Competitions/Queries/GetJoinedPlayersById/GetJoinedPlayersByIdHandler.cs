@@ -47,6 +47,7 @@ public class GetJoinedPlayersByIdHandler : IQueryHandler<GetJoinedPlayersByIdQue
         
         var entities = players
             .Select(x => _mapper.Map<JoinedPlayersLookup>(x))
+            .OrderByDescending(x => x.CurrentRating)
             .ToList();
 
         return Result.Success(new JoinedPlayerList() { Players = entities });

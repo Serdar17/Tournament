@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using System.Web.Http.Cors;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Dto;
+using Tournament.Application.Dto.Account;
 using Tournament.Application.Interfaces;
+using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Controllers;
 
@@ -43,8 +44,7 @@ public class AccountController: ApiController
 
         if (result.IsSuccess)
         {
-            var model = _mapper.Map<ParticipantInfoModel>(result.Value);
-            return Ok(model);
+            return Ok(result.Value);
         }
 
         return StatusCode(StatusCodes.Status404NotFound, new Response()
@@ -65,7 +65,9 @@ public class AccountController: ApiController
             _logger.LogError("Patch object sent from client is null.");
             return BadRequest("Patch object is null");
         }
+        
         _logger.LogInformation("Patch object {@Object}", patch);
+        
         var result = await _service.PatchParticipantAsync(id, patch);
 
         if (result.IsSuccess)
@@ -78,6 +80,21 @@ public class AccountController: ApiController
             Status = "Not Found",
             Message = result.Errors.FirstOrDefault()
         });
+    }
+
+    [HttpPost("confirm-result/{id:guid}")]
+    [ProducesResponseType(typeof(ParticipantInfoModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmResult([FromBody] MatchResultModel matchResult, [FromRoute] Guid id)
+    {
+        var result = await _service.ConfirmMatchResult(matchResult, id);
+
+        if (result.IsSuccess)
+        {
+            return Ok();
+        }
+
+        return BadRequest(result.Errors);
     }
 
     [HttpPut]

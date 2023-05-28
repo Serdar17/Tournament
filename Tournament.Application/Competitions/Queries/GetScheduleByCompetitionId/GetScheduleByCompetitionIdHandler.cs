@@ -11,7 +11,7 @@ namespace Tournament.Application.Competitions.Queries.GetScheduleByCompetitionId
 public class GetScheduleByCompetitionIdHandler : IQueryHandler<GetScheduleByCompetitionIdQuery, List<ScheduleDto>>
 {
     private readonly ICompetitionRepository _competitionRepository;
-    private readonly IGameResultRepository _gameResultRepository;
+    private readonly IMatchResultRepository _gameResultRepository;
     private readonly IPlayerRepository _playerRepository;
     private readonly ILogger<GetScheduleByCompetitionIdHandler> _logger;
     private readonly IMapper _mapper;
@@ -20,7 +20,7 @@ public class GetScheduleByCompetitionIdHandler : IQueryHandler<GetScheduleByComp
         ICompetitionRepository competitionRepository, 
         ILogger<GetScheduleByCompetitionIdHandler> logger, 
         IPlayerRepository playerRepository, 
-        IGameResultRepository gameResultRepository, IMapper mapper)
+        IMatchResultRepository gameResultRepository, IMapper mapper)
     {
         _competitionRepository = competitionRepository;
         _logger = logger;
@@ -44,12 +44,13 @@ public class GetScheduleByCompetitionIdHandler : IQueryHandler<GetScheduleByComp
 
         var result = new List<ScheduleDto>();
         var currentTableNumber = 1;
-        foreach (var schedule in competition.Schedules)
+        foreach (var schedule in competition.Schedules.OrderBy(x => x.Id))
         {
             var p1 = await _playerRepository.GetPlayerByIdAsync(schedule.FirstPlayerId, cancellationToken);
             var p2 = await _playerRepository.GetPlayerByIdAsync(schedule.SecondPlayerId, cancellationToken);
             
             var scheduleDto = new ScheduleDto(
+                schedule.Id,
                 _mapper.Map<PlayerDto>(p1), 
                 _mapper.Map<PlayerDto>(p2), 
                 currentTableNumber);
@@ -58,6 +59,8 @@ public class GetScheduleByCompetitionIdHandler : IQueryHandler<GetScheduleByComp
             {
                 scheduleDto.FirstPlayerScore = schedule.FirstPlayerScore;
                 scheduleDto.SecondPlayerScore = schedule.SecondPlayerScore;
+                scheduleDto.HasPlayed = true;
+                scheduleDto.IsConfirmed = true;
             }
             result.Add(scheduleDto);
             
@@ -65,7 +68,7 @@ public class GetScheduleByCompetitionIdHandler : IQueryHandler<GetScheduleByComp
                 ? 1
                 : currentTableNumber + 1;
         }
-
+        
         return Result.Success(result);
     }
 }

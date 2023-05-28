@@ -16,7 +16,7 @@ sealed class CurrentUserServices : ICurrentUserService
     {
         get
         {
-            var id = _httpContextAccessor.HttpContext?.User?.Claims.First(x => x.Type == "id").Value;
+            var id = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
             return string.IsNullOrEmpty(id)
                 ? string.Empty
                 : id;

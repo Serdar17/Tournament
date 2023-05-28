@@ -35,7 +35,7 @@ public static class DependencyInjection
 
         services.AddTransient<IScheduleRepository, ScheduleRepository>();
 
-        services.AddTransient<IGameResultRepository, GameResultRepository>();
+        services.AddTransient<IMatchResultRepository, MatchResultRepository>();
         
         return services;
     }

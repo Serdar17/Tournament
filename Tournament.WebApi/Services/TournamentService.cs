@@ -17,7 +17,7 @@ public class TournamentService : ITournamentService
         _queue = queue;
     }
     
-    public List<(Player, Player)> GetAvailablePairs(List<Player> players, Competition competition)
+    public List<Player> RatingCalculate(List<Player> players)
     {
         throw new NotImplementedException();
     }

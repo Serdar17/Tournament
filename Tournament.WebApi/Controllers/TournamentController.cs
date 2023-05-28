@@ -3,9 +3,14 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Tournament.Application.Dto.Competitions.ConfirmedMatchResult;
+using Tournament.Application.Dto.Schedule;
 using Tournament.Application.Features.Players.Commands.DeletePlayer;
 using Tournament.Application.Features.Players.Queries.GetCompetitionPlayers;
-using Tournament.Application.Tournament.Commands;
+using Tournament.Application.Tournament.Commands.GenerateSchedule;
+using Tournament.Application.Tournament.Commands.RatingCalculate;
+using Tournament.Application.Tournament.Commands.SaveSchedule;
+using Tournament.Application.Tournament.Queries.GetConfirmedMatchResults;
 using Tournament.Domain.Models.Participants;
 using Tournament.Models.Tournament;
 
@@ -40,6 +45,27 @@ public class TournamentController : ApiController
 
         return NotFound(result.Errors.FirstOrDefault());
     }
+
+    [HttpGet("competition/{id:guid}/match-results")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetConfirmedMatchResults([FromRoute] Guid id)
+    {
+        var query = new GetConfirmedMatchResultQuery()
+        {
+            CompetitionId = id
+        };
+
+        var result = await _sender.Send(query);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return NotFound(result.Errors);
+    }
     
     [HttpPost("competition/generate-schedule")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
@@ -60,22 +86,50 @@ public class TournamentController : ApiController
         return NotFound(result.Errors.FirstOrDefault());
     }
 
-    // [HttpPost("add")]
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    // [ProducesResponseType(StatusCodes.Status201Created)]
-    // [ProducesResponseType(StatusCodes.Status404NotFound)]
-    // public async Task<IActionResult> Add([FromBody] AddPlayerDto playerDto)
-    // {
-    //     var command = _mapper.Map<CreatePlayerCommand>(playerDto);
-    //
-    //     var result = await _sender.Send(command);
-    //
-    //     if (result.IsSuccess)
-    //         return StatusCode(StatusCodes.Status201Created);
-    //     
-    //     return NotFound(result.Errors.FirstOrDefault());
-    // }
+    [HttpPost("competition/{id:guid}/save")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SaveResult([FromRoute] Guid id, [FromBody] ConfirmedMatchResultLookup confirmedMatchResult)
+    {
+        var command = new SaveScheduleCommand()
+        {
+            CompetitionId = id,
+            ConfirmedMatchResultLookup = confirmedMatchResult
+        };
 
+        var result = await _sender.Send(command);
+
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return NotFound(result.Errors);
+    }
+
+    [HttpPost("competition/{id:guid}/rating-calculate")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.AdminAndReferee)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RatingCalculate([FromRoute] Guid id)
+    {
+        var command = new RatingCalculateCommand()
+        {
+            CompetitionId = id
+        };
+
+        var result = await _sender.Send(command);
+
+        if (result.IsSuccess)
+        {
+            return NoContent();
+        }
+
+        return NotFound(result.Errors);
+    }
+    
+    
     [HttpDelete("delete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = ParticipantRole.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

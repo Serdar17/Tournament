@@ -9,7 +9,7 @@ public interface IApplicationDbContext
     
     DbSet<Player> Players { get;  }
     
-    // DbSet<GameResult> GameResults { get; }
+    DbSet<MatchResult> MatchResults { get; }
     
     DbSet<Schedule> Schedules { get; }
 

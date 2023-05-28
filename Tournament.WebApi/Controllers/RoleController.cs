@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Dto;
+using Tournament.Application.Dto.Auth;
 using Tournament.Application.Interfaces;
 
 namespace Tournament.Controllers;

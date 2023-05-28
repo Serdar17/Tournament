@@ -10,7 +10,9 @@ public interface IPlayerRepository
 
     Task Add(Player player, CancellationToken cancellationToken = default);
 
-    void Update(Player player, CancellationToken cancellationToken = default);
+    Task Update(Player player, CancellationToken cancellationToken = default);
+    
+    Task UpdateRange(List<Player> players, CancellationToken cancellationToken = default);
 
     Task Remove(Player player, CancellationToken cancellationToken = default);
 }

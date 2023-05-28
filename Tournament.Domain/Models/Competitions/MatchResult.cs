@@ -2,15 +2,15 @@
 
 namespace Tournament.Domain.Models.Competitions;
 
-public class GameResult : BaseEntity<Guid>
+public class MatchResult : BaseEntity<Guid>
 {
-    public Guid WinnerPlayerId { get; set; }
+    public Guid FirstPlayerId { get; set; }
 
-    public Guid LoserPlayerId { get; set; }
+    public Guid SecondPlayerId { get; set; }
 
-    public int ScoreWinner { get; set; }
+    public Score? FirstPlayerScore { get; set; }
 
-    public int ScoreLoser { get; set; }
+    public Score? SecondPlayerScore { get; set; }
     
     public int TableNumber { get; set; }
     
@@ -23,5 +23,4 @@ public class GameResult : BaseEntity<Guid>
     public Guid? CompetitionId { get; set; }
     
     public Competition? Competition { get; set; }
-
 }

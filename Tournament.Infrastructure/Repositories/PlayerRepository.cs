@@ -36,9 +36,15 @@ public class PlayerRepository : IPlayerRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async void Update(Player player, CancellationToken cancellationToken = default)
+    public async Task Update(Player player, CancellationToken cancellationToken = default)
     {
         _dbContext.Players.Update(player);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateRange(List<Player> players, CancellationToken cancellationToken = default)
+    {
+        _dbContext.Players.UpdateRange(players);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 

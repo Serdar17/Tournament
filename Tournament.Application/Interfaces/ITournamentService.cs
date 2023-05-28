@@ -4,5 +4,5 @@ namespace Tournament.Application.Interfaces;
 
 public interface ITournamentService
 {
-    List<(Player, Player)> GetAvailablePairs(List<Player> players, Competition competition);
+    List<Player> RatingCalculate(List<Player> players);
 }

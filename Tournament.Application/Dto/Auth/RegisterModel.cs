@@ -2,7 +2,7 @@
 using Destructurama.Attributed;
 using Tournament.Domain.Enums;
 
-namespace Tournament.Application.Dto;
+namespace Tournament.Application.Dto.Auth;
 
 public class RegisterModel
 {

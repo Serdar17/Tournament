@@ -2,12 +2,15 @@
 
 public class ScheduleDto
 {
-    public ScheduleDto(PlayerDto firstPlayer, PlayerDto secondPlayer, int tableNumber)
+    public ScheduleDto(int scheduleId, PlayerDto firstPlayer, PlayerDto secondPlayer, int tableNumber)
     {
+        ScheduleId = scheduleId;
         FirstPlayer = firstPlayer;
         SecondPlayer = secondPlayer;
         TableNumber = tableNumber;
     }
+
+    public int ScheduleId { get; set; }
     
     public PlayerDto FirstPlayer { get; set; }
 
@@ -15,7 +18,9 @@ public class ScheduleDto
 
     public int TableNumber { get; set; }
     
-    public bool HasPlayer { get; set; }
+    public bool HasPlayed { get; set; }
+    
+    public bool IsConfirmed { get; set; }
 
     public int FirstPlayerScore { get; set; }
 

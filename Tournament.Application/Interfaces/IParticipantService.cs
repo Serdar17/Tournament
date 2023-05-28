@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
-using Tournament.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Tournament.Application.Dto;
+using Tournament.Application.Dto.Account;
 using Tournament.Domain.Models.Participants;
 
 namespace Tournament.Application.Interfaces;
@@ -10,7 +10,9 @@ public interface IParticipantService
 {
     public List<ApplicationUser> GetAll();
 
-    public Task<Result<ApplicationUser>> GetParticipantByIdAsync(Guid guid);
+    public Task<Result<ParticipantInfoModel>> GetParticipantByIdAsync(Guid guid);
+
+    public Task<Result> ConfirmMatchResult(MatchResultModel matchResult, Guid id);
 
     public Task<Result<ParticipantInfoModel>> PatchParticipantAsync(Guid guid, 
         JsonPatchDocument<ParticipantInfoModel> patch);

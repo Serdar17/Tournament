@@ -2,9 +2,14 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Tournament.Application.Dto;
+using Tournament.Application.Dto.Account;
 using Tournament.Application.Interfaces;
+using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Models.Participants;
+using Tournament.Domain.Repositories;
 
 namespace Tournament.Services;
 
@@ -12,11 +17,25 @@ public sealed class ParticipantService : IParticipantService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMapper _mapper;
+    private readonly ICompetitionRepository _competitionRepository;
+    private readonly IPlayerRepository _playerRepository;
+    private readonly IMatchResultRepository _matchResultRepository;
+    private readonly IScheduleRepository _scheduleRepository;
+    private readonly IParticipantRepository _participantRepository;
     
-    public ParticipantService(UserManager<ApplicationUser> userManager, IMapper mapper)
+    public ParticipantService(UserManager<ApplicationUser> userManager, IMapper mapper,
+        IMatchResultRepository matchResultRepository, 
+        IPlayerRepository playerRepository, 
+        ICompetitionRepository competitionRepository, 
+        IScheduleRepository scheduleRepository, IParticipantRepository participantRepository)
     {
         _userManager = userManager;
         _mapper = mapper;
+        _matchResultRepository = matchResultRepository;
+        _playerRepository = playerRepository;
+        _competitionRepository = competitionRepository;
+        _scheduleRepository = scheduleRepository;
+        _participantRepository = participantRepository;
     }
     
     public List<ApplicationUser> GetAll()
@@ -24,17 +43,103 @@ public sealed class ParticipantService : IParticipantService
         return _userManager.Users.ToList();
     }
 
-    public async Task<Result<ApplicationUser>> GetParticipantByIdAsync(Guid guid)
+    public async Task<Result<ParticipantInfoModel>> GetParticipantByIdAsync(Guid guid)
     {
-        var participant = await _userManager.FindByIdAsync(guid.ToString());
+        var participant = await _userManager.Users
+            .Where(x => x.Id == guid.ToString())
+            .Include(x => x.Player)
+            .ThenInclude(p => p.Competition)
+            .FirstOrDefaultAsync();
 
         if (participant is null)
         {
             return Result.Error($"Participant with id: {guid.ToString()} doesn't exist in the database.");
         }
 
-        return Result.Success(participant);
+        var resultModel = _mapper.Map<ParticipantInfoModel>(participant);
+        
+        if (participant.Player?.Competition is null)
+        {
+            return Result.Error($"Participant with id: {guid.ToString()} doesn't exist in the database.");
+        }
+
+        var competition = await _competitionRepository.GetCompetitionByIdAsync(participant.Player.CompetitionId);
+
+        if (competition is null)
+        {
+            Log.Information("Entity \"{Name}\" {@CompetitionId} was not found",
+                nameof(Competition), participant.Player.CompetitionId);
+            
+            return Result.NotFound($"Entity \"{nameof(Competition)}\" ({participant.Player.CompetitionId}) was not found.");
+        }
+        
+        var schedules = competition.Schedules
+            .Where(x => (x.FirstPlayerId == participant.Player.Id || x.SecondPlayerId == participant.Player.Id) &&
+                        !x.IsConfirmed)
+            .ToList();
+
+        foreach (var schedule in schedules)
+        {
+            var firstPlayer = await _playerRepository.GetPlayerByIdAsync(schedule.FirstPlayerId);
+            var secondPlayer = await _playerRepository.GetPlayerByIdAsync(schedule.SecondPlayerId);
+
+            var model = new MatchResultModel()
+            {
+                FirstPlayerId = schedule.FirstPlayerId,
+                FirstPlayerDto = _mapper.Map<PlayerModel>(firstPlayer),
+                SecondPlayerId = schedule.SecondPlayerId,
+                SecondPlayerDto = _mapper.Map<PlayerModel>(secondPlayer),
+                Score = new Score(0, 0, false),
+            };
+
+            model.FirstPlayerDto.CurrentRating = firstPlayer.CurrentRating;
+            model.SecondPlayerDto.CurrentRating = secondPlayer.CurrentRating;
+            
+            resultModel.MatchResultModels.Add(model);
+        }
+        
+        return resultModel;
     }
+
+    public async Task<Result> ConfirmMatchResult(MatchResultModel matchResult, Guid id)
+    {
+        var participant = await _userManager.Users
+            .Where(x => x.Id == id.ToString())
+            .Include(x => x.Player)
+            .ThenInclude(p => p.Competition)
+            .FirstOrDefaultAsync();
+        
+        if (participant is null)
+        {
+            return Result.Error($"Participant with id: {id.ToString()} doesn't exist in the database.");
+        }
+
+        var result =
+            _matchResultRepository.GetMatchResultByPlayersId(matchResult.FirstPlayerId, matchResult.SecondPlayerId);
+
+        if (result is null)
+        {
+            var newMatchResult = new MatchResult()
+            {
+                FirstPlayerId = participant.Player.Id,
+                FirstPlayerScore = new Score(matchResult.Score.Scored, matchResult.Score.Missed, true),
+                CompetitionId = participant.Player.CompetitionId,
+                Competition = participant.Player.Competition
+            };
+
+            await _matchResultRepository.AddAsync(newMatchResult);
+            
+            return Result.Success();
+        }
+
+        result.SecondPlayerId = participant.Player.Id;
+        result.SecondPlayerScore = new Score(matchResult.Score.Scored, matchResult.Score.Missed, true);
+
+        await _matchResultRepository.Update(result);
+
+        return Result.Success();
+    }
+
 
     public async Task<Result<ParticipantInfoModel>> PatchParticipantAsync(Guid guid, 
         JsonPatchDocument<ParticipantInfoModel> patch)
