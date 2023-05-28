@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Dto;
 using Tournament.Application.Dto.Account;
 using Tournament.Application.Interfaces;
-using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Controllers;
 

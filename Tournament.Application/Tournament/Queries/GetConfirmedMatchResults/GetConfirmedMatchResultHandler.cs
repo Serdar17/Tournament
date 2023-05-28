@@ -44,24 +44,36 @@ public class GetConfirmedMatchResultHandler : IQueryHandler<GetConfirmedMatchRes
 
         foreach (var schedule in competition.Schedules.Where(x => !x.IsConfirmed))
         {
-            var confirmedResult = new ConfirmedMatchResultLookup();
+            var confirmedResult = _mapper.Map<ConfirmedMatchResultLookup>(schedule);
 
-            var matchResult = competition.MatchResults.FirstOrDefault(x => x.FirstPlayerId == schedule.FirstPlayerId || x.SecondPlayerId == schedule.FirstPlayerId);
-
-            if (matchResult is not null)
-            {
-                confirmedResult.FirstPlayerScore = matchResult.FirstPlayerScore;
-            }
-            confirmedResult.FirstPlayerId = schedule.FirstPlayerId;
+            // var matchResult = competition.MatchResults.FirstOrDefault(x => x.FirstPlayerId == schedule.FirstPlayerId || x.SecondPlayerId == schedule.FirstPlayerId);
+            // if (schedule.FirstPlayerScored is not null)
+            // {
+            //     confirmedResult.FirstPlayerScore = schedule.FirstPlayerScored;
+            // }
+            // confirmedResult.FirstPlayerId = schedule.FirstPlayerId;
+            //
+            // if (schedule.SecondPlayerScored is not null)
+            // {
+            //     confirmedResult.SecondPlayerScore = schedule.SecondPlayerScored;
+            // }
+            // confirmedResult.SecondPlayerId = schedule.SecondPlayerId;
             
-            matchResult = competition.MatchResults.FirstOrDefault(x => x.FirstPlayerId == schedule.SecondPlayerId || x.SecondPlayerId == schedule.SecondPlayerId);
-            if (matchResult is not null)
-            {
-                confirmedResult.SecondPlayerScore = matchResult.FirstPlayerScore;
-            }
-            confirmedResult.SecondPlayerId = schedule.SecondPlayerId;
+            // if (matchResult is not null)
+            // {
+            //     
+            // }
+            // confirmedResult.FirstPlayerId = schedule.FirstPlayerId;
+            
+            // matchResult = competition.MatchResults.FirstOrDefault(x => x.FirstPlayerId == schedule.SecondPlayerId || x.SecondPlayerId == schedule.SecondPlayerId);
+            // if (matchResult is not null)
+            // {
+            //     confirmedResult.SecondPlayerScore = matchResult.SecondPlayerScore;
+            // }
+            // confirmedResult.SecondPlayerId = schedule.SecondPlayerId;
             
             var player =  competition.Players.FirstOrDefault(x => x.Id == schedule.FirstPlayerId);
+            
             confirmedResult.FirstPlayerModel = _mapper.Map<PlayerModel>(player);
             
             player =  competition.Players.FirstOrDefault(x => x.Id == schedule.SecondPlayerId);
@@ -72,6 +84,6 @@ public class GetConfirmedMatchResultHandler : IQueryHandler<GetConfirmedMatchRes
             result.Add(confirmedResult);
         }
         
-        return Result.Success(new ConfirmedMatchResultDto(){ResultLookups = result});
+        return Result.Success(new ConfirmedMatchResultDto(){ ResultLookups = result });
     }
 }

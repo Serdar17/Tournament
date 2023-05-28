@@ -20,7 +20,7 @@ public sealed class Competition : BaseEntity<Guid>
     
     public List<Player> Players { get; set; } = new();
 
-    public List<MatchResult> MatchResults { get; set; } = new();
+    // public List<MatchResult> MatchResults { get; set; } = new();
 
     public List<Schedule> Schedules { get; set; } = new();
 

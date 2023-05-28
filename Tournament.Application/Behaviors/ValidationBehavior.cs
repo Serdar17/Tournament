@@ -1,7 +1,6 @@
 ﻿using Ardalis.Result;
 using FluentValidation;
 using MediatR;
-using Tournament.Domain.Shared;
 
 namespace Tournament.Application.Behaviors;
 

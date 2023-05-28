@@ -1,4 +1,4 @@
-﻿namespace Tournament.Application.Dto.Schedule;
+﻿namespace Tournament.Application.Dto.ScheduleDtos;
 
 public class ScheduleDto
 {

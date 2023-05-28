@@ -7,6 +7,10 @@ public class Schedule : BaseEntity<int>
     public Guid FirstPlayerId { get; set; }
     
     public Guid SecondPlayerId { get; set; }
+
+    public Score? FirstPlayerScored { get; set; }
+
+    public Score? SecondPlayerScored { get; set; }
     
     public bool HasPlayed { get; set; }
     

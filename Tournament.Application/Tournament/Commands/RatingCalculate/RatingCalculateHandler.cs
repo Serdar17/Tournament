@@ -1,7 +1,6 @@
 ﻿using Ardalis.Result;
 using Microsoft.Extensions.Logging;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Calculation.Solver;
 using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
 using RatingCalculator = Tournament.Application.Solver.RatingCalculator;

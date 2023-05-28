@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using System.Web.Http.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Dto;
 using Tournament.Application.Dto.Auth;

@@ -26,12 +26,12 @@ public class SaveScheduleCommandValidator : AbstractValidator<SaveScheduleComman
             .NotNull()
             .WithMessage("Резльтаты второго игрока не должены быть null");
         
-        RuleFor(command => command.ConfirmedMatchResultLookup.FirstPlayerScore!.Scored)
-            .Equal(command => command.ConfirmedMatchResultLookup.SecondPlayerScore!.Missed)
+        RuleFor(command => command.ConfirmedMatchResultLookup.FirstPlayerScore!.FirstPlayerScored)
+            .Equal(command => command.ConfirmedMatchResultLookup.SecondPlayerScore!.FirstPlayerScored)
             .WithMessage("Некорректный счет");
         
-        RuleFor(command => command.ConfirmedMatchResultLookup.FirstPlayerScore!.Missed)
-            .Equal(command => command.ConfirmedMatchResultLookup.SecondPlayerScore!.Scored)
+        RuleFor(command => command.ConfirmedMatchResultLookup.FirstPlayerScore!.SecondPlayerScored)
+            .Equal(command => command.ConfirmedMatchResultLookup.SecondPlayerScore!.SecondPlayerScored)
             .WithMessage("Некорректный счет");
     }
 }

@@ -2,7 +2,6 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Application.Dto.Schedule;
 using Tournament.Application.Interfaces.DbInterfaces;
 using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
@@ -47,8 +46,8 @@ public class SaveScheduleHandler : ICommandHandler<SaveScheduleCommand>
 
         var schedule = await _scheduleRepository.GetScheduleByIdAsync(request.ConfirmedMatchResultLookup.ScheduleId, cancellationToken);
         
-        schedule.UpdateScore(request.ConfirmedMatchResultLookup.FirstPlayerScore!.Scored, 
-            request.ConfirmedMatchResultLookup.FirstPlayerScore!.Missed, true, true);
+        schedule.UpdateScore(request.ConfirmedMatchResultLookup.FirstPlayerScore!.FirstPlayerScored, 
+            request.ConfirmedMatchResultLookup.FirstPlayerScore!.SecondPlayerScored, true, true);
                 
         _scheduleRepository.Update(schedule);
         
@@ -57,11 +56,11 @@ public class SaveScheduleHandler : ICommandHandler<SaveScheduleCommand>
         var secondPlayer = 
             await _playerRepository.GetPlayerByIdAsync(request.ConfirmedMatchResultLookup.SecondPlayerId, cancellationToken);
         
-        firstPlayer.SetScore(request.ConfirmedMatchResultLookup.FirstPlayerScore.Scored, 
-            request.ConfirmedMatchResultLookup.FirstPlayerScore.Scored, request.ConfirmedMatchResultLookup.SecondPlayerId);
+        firstPlayer.SetScore(request.ConfirmedMatchResultLookup.FirstPlayerScore.FirstPlayerScored, 
+            request.ConfirmedMatchResultLookup.FirstPlayerScore.SecondPlayerScored, request.ConfirmedMatchResultLookup.SecondPlayerId);
             
-        secondPlayer.SetScore(request.ConfirmedMatchResultLookup.SecondPlayerScore!.Scored, 
-            request.ConfirmedMatchResultLookup.SecondPlayerScore.Missed, request.ConfirmedMatchResultLookup.FirstPlayerId);
+        secondPlayer.SetScore(request.ConfirmedMatchResultLookup.SecondPlayerScore!.SecondPlayerScored, 
+            request.ConfirmedMatchResultLookup.SecondPlayerScore.FirstPlayerScored, request.ConfirmedMatchResultLookup.FirstPlayerId);
         
         _dbContext.Players.UpdateRange(firstPlayer, secondPlayer);
         

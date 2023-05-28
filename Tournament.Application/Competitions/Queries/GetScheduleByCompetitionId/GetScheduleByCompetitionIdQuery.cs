@@ -1,5 +1,5 @@
 ﻿using Tournament.Application.Abstraction.Messaging;
-using Tournament.Application.Dto.Schedule;
+using Tournament.Application.Dto.ScheduleDtos;
 
 namespace Tournament.Application.Competitions.Queries.GetScheduleByCompetitionId;
 

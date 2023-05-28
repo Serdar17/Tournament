@@ -20,7 +20,6 @@ public class CompetitionRepository : ICompetitionRepository
             .Include(c => c.Players)
             .ThenInclude(p => p.ApplicationUser)
             .Include(c => c.Schedules)
-            .Include(c => c.MatchResults)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 

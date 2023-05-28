@@ -2,7 +2,7 @@
 using Tournament.Application.Common.Mappings;
 using Tournament.Domain.Models.Competitions;
 
-namespace Tournament.Application.Dto.Schedule;
+namespace Tournament.Application.Dto.ScheduleDtos;
 
 public class PlayerDto : IMapWith<Player>
 {

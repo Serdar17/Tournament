@@ -2,16 +2,16 @@
 
 public class Score
 {
-    public Score(int scored, int missed, bool isConfirmed)
+    public Score(int firstPlayerScored, int secondPlayerScored, bool isConfirmed)
     {
-        Scored = scored;
-        Missed = missed;
+        FirstPlayerScored = firstPlayerScored;
+        SecondPlayerScored = secondPlayerScored;
         IsConfirmed = isConfirmed;
     }
     
-    public int Scored { get; set; }
+    public int FirstPlayerScored { get; set; }
 
-    public int Missed { get; set; }
+    public int SecondPlayerScored { get; set; }
 
     public bool IsConfirmed { get; set; }
 }

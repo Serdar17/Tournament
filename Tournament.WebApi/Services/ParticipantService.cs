@@ -21,13 +21,11 @@ public sealed class ParticipantService : IParticipantService
     private readonly IPlayerRepository _playerRepository;
     private readonly IMatchResultRepository _matchResultRepository;
     private readonly IScheduleRepository _scheduleRepository;
-    private readonly IParticipantRepository _participantRepository;
     
     public ParticipantService(UserManager<ApplicationUser> userManager, IMapper mapper,
         IMatchResultRepository matchResultRepository, 
         IPlayerRepository playerRepository, 
-        ICompetitionRepository competitionRepository, 
-        IScheduleRepository scheduleRepository, IParticipantRepository participantRepository)
+        ICompetitionRepository competitionRepository, IScheduleRepository scheduleRepository)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -35,7 +33,6 @@ public sealed class ParticipantService : IParticipantService
         _playerRepository = playerRepository;
         _competitionRepository = competitionRepository;
         _scheduleRepository = scheduleRepository;
-        _participantRepository = participantRepository;
     }
     
     public List<ApplicationUser> GetAll()
@@ -107,6 +104,7 @@ public sealed class ParticipantService : IParticipantService
             .Where(x => x.Id == id.ToString())
             .Include(x => x.Player)
             .ThenInclude(p => p.Competition)
+            .ThenInclude(c => c.Schedules)
             .FirstOrDefaultAsync();
         
         if (participant is null)
@@ -114,28 +112,50 @@ public sealed class ParticipantService : IParticipantService
             return Result.Error($"Participant with id: {id.ToString()} doesn't exist in the database.");
         }
 
-        var result =
-            _matchResultRepository.GetMatchResultByPlayersId(matchResult.FirstPlayerId, matchResult.SecondPlayerId);
+        // var result =
+        //     _matchResultRepository.GetMatchResultByPlayersId(matchResult.FirstPlayerId, matchResult.SecondPlayerId);
 
-        if (result is null)
+        var schedule = participant.Player.Competition.Schedules
+            .FirstOrDefault(x => x.FirstPlayerId == matchResult.FirstPlayerId && x.SecondPlayerId == matchResult.SecondPlayerId || 
+                                 x.FirstPlayerId == matchResult.SecondPlayerId && x.SecondPlayerId == matchResult.FirstPlayerId);
+
+        if (schedule.FirstPlayerId == participant.Player.Id)
         {
-            var newMatchResult = new MatchResult()
-            {
-                FirstPlayerId = participant.Player.Id,
-                FirstPlayerScore = new Score(matchResult.Score.Scored, matchResult.Score.Missed, true),
-                CompetitionId = participant.Player.CompetitionId,
-                Competition = participant.Player.Competition
-            };
-
-            await _matchResultRepository.AddAsync(newMatchResult);
+            schedule.FirstPlayerScored = new Score(matchResult.Score.FirstPlayerScored,
+                matchResult.Score.SecondPlayerScored, true);
             
-            return Result.Success();
+            _scheduleRepository.Update(schedule);
         }
 
-        result.SecondPlayerId = participant.Player.Id;
-        result.SecondPlayerScore = new Score(matchResult.Score.Scored, matchResult.Score.Missed, true);
-
-        await _matchResultRepository.Update(result);
+        if (schedule.SecondPlayerId == participant.Player.Id)
+        {
+            schedule.SecondPlayerScored = new Score(matchResult.Score.FirstPlayerScored,
+                matchResult.Score.SecondPlayerScored, true);
+            
+            _scheduleRepository.Update(schedule);
+        }
+        
+        await _scheduleRepository.SaveAsync();
+        //
+        // if (result is null)
+        // {
+        //     var newMatchResult = new MatchResult()
+        //     {
+        //         FirstPlayerId = participant.Player.Id,
+        //         FirstPlayerScore = new Score(matchResult.Score.Scored, matchResult.Score.SecondPlayerScored, true),
+        //         CompetitionId = participant.Player.CompetitionId,
+        //         Competition = participant.Player.Competition
+        //     };
+        //
+        //     await _matchResultRepository.AddAsync(newMatchResult);
+        //     
+        //     return Result.Success();
+        // }
+        //
+        // result.SecondPlayerId = participant.Player.Id;
+        // result.SecondPlayerScore = new Score(matchResult.Score.Scored, matchResult.Score.SecondPlayerScored, true);
+        //
+        // await _matchResultRepository.UpdateAsync(result);
 
         return Result.Success();
     }

@@ -2,7 +2,7 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Tournament.Application.Abstraction.Messaging;
-using Tournament.Application.Dto.Schedule;
+using Tournament.Application.Dto.ScheduleDtos;
 using Tournament.Domain.Models.Competitions;
 using Tournament.Domain.Repositories;
 

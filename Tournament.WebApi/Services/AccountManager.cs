@@ -8,7 +8,6 @@ using Tournament.Application.Dto;
 using Tournament.Application.Dto.Auth;
 using Tournament.Application.Interfaces;
 using Tournament.Domain.Models.Participants;
-using Tournament.Domain.Repositories;
 using Tournament.Options;
 
 namespace Tournament.Services;

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tournament.Application.Dto.Competitions.ConfirmedMatchResult;
-using Tournament.Application.Dto.Schedule;
 using Tournament.Application.Features.Players.Commands.DeletePlayer;
 using Tournament.Application.Features.Players.Queries.GetCompetitionPlayers;
 using Tournament.Application.Tournament.Commands.GenerateSchedule;

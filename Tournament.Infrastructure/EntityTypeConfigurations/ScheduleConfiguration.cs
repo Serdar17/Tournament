@@ -11,5 +11,8 @@ public class ScheduleConfiguration : IEntityTypeConfiguration<Schedule>
         builder
             .Property(p => p.Id)
             .ValueGeneratedOnAdd();
+        
+        builder.OwnsOne(x => x.FirstPlayerScored);
+        builder.OwnsOne(x => x.SecondPlayerScored);
     }
 }

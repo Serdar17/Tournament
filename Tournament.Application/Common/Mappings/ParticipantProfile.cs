@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Tournament.Application.Dto;
 using Tournament.Application.Dto.Account;
 using Tournament.Application.Dto.Auth;
-using Tournament.Domain.Models;
 using Tournament.Domain.Models.Participants;
 
 namespace Tournament.Application.Common.Mappings;

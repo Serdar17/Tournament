@@ -1,6 +1,5 @@
 ﻿using Tournament.Application.Abstraction.Messaging;
 using Tournament.Application.Dto.Competitions.ConfirmedMatchResult;
-using Tournament.Application.Dto.Schedule;
 
 namespace Tournament.Application.Tournament.Commands.SaveSchedule;
 
