@@ -29,6 +29,7 @@ public class ParticipantProfile : Profile
             .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender))
             .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.Age))
             .ForMember(dest => dest.SchoolNumber, opt => opt.MapFrom(src => src.SchoolNumber))
+            .ForMember(dest => dest.CurrentRating, opt => opt.MapFrom(src => src.Rating))
             .ReverseMap();
     }
 }

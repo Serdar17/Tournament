@@ -57,7 +57,7 @@ public sealed class ParticipantService : IParticipantService
         
         if (participant.Player?.Competition is null)
         {
-            return Result.Error($"Participant with id: {guid.ToString()} doesn't exist in the database.");
+            return resultModel;
         }
 
         var competition = await _competitionRepository.GetCompetitionByIdAsync(participant.Player.CompetitionId);
@@ -77,6 +77,12 @@ public sealed class ParticipantService : IParticipantService
 
         foreach (var schedule in schedules)
         {
+            if (schedule.FirstPlayerScored != null && schedule.FirstPlayerId == participant.Player.Id && schedule.FirstPlayerScored.IsConfirmed)
+                continue;
+            
+            if (schedule.SecondPlayerScored != null && schedule.SecondPlayerId == participant.Player.Id && schedule.SecondPlayerScored.IsConfirmed)
+                continue;
+            
             var firstPlayer = await _playerRepository.GetPlayerByIdAsync(schedule.FirstPlayerId);
             var secondPlayer = await _playerRepository.GetPlayerByIdAsync(schedule.SecondPlayerId);
 

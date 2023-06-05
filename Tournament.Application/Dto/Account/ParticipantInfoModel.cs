@@ -29,6 +29,9 @@ public class ParticipantInfoModel
     
     [Required]
     public string SportsCategory { get; set; }
+    
+    [Required] 
+    public int CurrentRating { get; set; }
 
     public List<MatchResultModel> MatchResultModels { get; set; } = new();
 }

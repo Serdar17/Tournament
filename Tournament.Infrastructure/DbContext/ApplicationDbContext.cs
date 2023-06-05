@@ -11,7 +11,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        Database.EnsureCreatedAsync();
+        // Database.EnsureDeleted();
+        Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder builder) =>
