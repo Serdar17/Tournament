@@ -3,14 +3,24 @@ networks:
   tournament-dev:
     driver: bridge
 services:
-  app:
+  client:
+    image: client
+    build:
+      context: ./Tournament.Client
+      dockerfile: Dockerfile
+    ports:
+      - "5001:3000"
+    depends_on:
+      - app
+  
+  app:  
     image: docker.io/library/tournament_app
     container_name: tournament
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "5000:80"
     hostname: "192.168.18.137"
     networks:
       - tournament-dev
@@ -18,6 +28,7 @@ services:
       - postgres_db
     environment:
       - ConnectionString__DefaultConnection=Server=postgres_db;Port=5432;User ID=postgres;Password=1234;Database=postgres;TrustServerCertificate=True;Pooling=true;
+  
   postgres_db:
     container_name: postgres
     image: postgres:latest
