@@ -35,7 +35,10 @@ internal sealed class RatingCalculateHandler : ICommandHandler<RatingCalculateCo
             return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.CompetitionId}) was not found.");
         }
 
-        var ratingCalculator = new RatingCalculator(competition.Players, competition.Schedules);
+        var ratingCalculator = new RatingCalculator(competition.Players
+            .Where(x => x is { IsParticipation: true, IsBlocked: false })
+            .ToList(), 
+            competition.Schedules);
         
         var playersWithNewRating = ratingCalculator.CalculateRating();
 

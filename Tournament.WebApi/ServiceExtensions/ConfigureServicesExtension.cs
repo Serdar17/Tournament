@@ -14,5 +14,7 @@ public static class ConfigureServicesExtension
         services.AddScoped<IScheduleService, ScheduleService>();
 
         services.AddSingleton<ICurrentUserService, CurrentUserServices>();
+
+        services.AddSingleton<ICompetitionService, CompetitionService>();
     }
 }

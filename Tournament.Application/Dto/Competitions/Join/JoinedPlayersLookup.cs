@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Tournament.Application.Common.Mappings;
+using Tournament.Domain.Enums;
 using Tournament.Domain.Models.Competitions;
 
 namespace Tournament.Application.Dto.Competitions.Join;
@@ -24,6 +25,8 @@ public class JoinedPlayersLookup : IMapWith<Player>
     
     public int LoseGameCount { get; set; }
     
+    public Gender Gender { get; set; } 
+    
     public void Mapping(Profile profile)
     {
         profile.CreateMap<Player, JoinedPlayersLookup>()
@@ -33,6 +36,8 @@ public class JoinedPlayersLookup : IMapWith<Player>
                 opt => opt.MapFrom(info => info.ApplicationUser!.MiddleName))
             .ForMember(infoVm => infoVm.LastName,
                 opt => opt.MapFrom(info => info.ApplicationUser!.LastName))
+            .ForMember(infoVm => infoVm.Gender,
+                opt => opt.MapFrom(info => info.ApplicationUser!.Gender))
             .ForMember(infoVm => infoVm.PlayerId,
                 opt => opt.MapFrom(info => info.Id))
             .ForMember(infoVm => infoVm.CurrentRating,

@@ -43,7 +43,9 @@ public class GenerateScheduleHandler : ICommandHandler<GenerateScheduleCommand>
         
         var players = await _playerRepository.GetPlayersByCompetitionId(competition.Id, cancellationToken);
         
-        var pairs = _scheduleService.GenerateSchedule(players.ToList());
+        var pairs = _scheduleService.GenerateSchedule(players
+            .Where(x => x is { IsParticipation: true, IsBlocked: false })
+            .ToList());
 
         foreach (var pair in pairs)
         {

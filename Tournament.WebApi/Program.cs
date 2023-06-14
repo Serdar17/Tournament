@@ -3,6 +3,7 @@ using Serilog;
 using Tournament.Application;
 using Tournament.Application.Common.Mappings;
 using Tournament.Application.Interfaces.DbInterfaces;
+using Tournament.BackgroundServices;
 using Tournament.Infrastructure;
 using Tournament.Middleware;
 using Tournament.Options;
@@ -21,6 +22,8 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
     cfg.AddProfile(new AssemblyMappingProfile(typeof(IApplicationDbContext).Assembly));
 });
+
+builder.Services.AddHostedService<TournamentBackgroundService>();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -58,33 +61,33 @@ builder.Host.ConfigureSerilog(builder.Configuration);
 
 var app = builder.Build();
 
-    if (app.Environment.IsDevelopment())
-    {
+if (app.Environment.IsDevelopment())
+{
 
-    }
-    app.UseSwagger();
-    app.UseSwaggerUI();
+}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-    app.UseStaticFiles();
-    app.UseCustomExceptionHandle();
+app.UseStaticFiles();
+app.UseCustomExceptionHandle();
 
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
+app.UseExceptionHandler("/Error");
+app.UseHsts();
 
-    app.UseSerilogRequestLogging();
-    app.UseHttpsRedirection();
-    app.UseRouting();
-    app.UseCors("EnableCORS");
+app.UseSerilogRequestLogging();
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("EnableCORS");
 
-    app.UseAuthentication();
-    app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
-    app.UseCoreAdminCustomUrl("admin");
-    app.UseCoreAdminCustomTitle("Панель администратора");
+app.UseCoreAdminCustomUrl("admin");
+app.UseCoreAdminCustomTitle("Панель администратора");
 
-    app.UseMiddleware<JwtMiddleware>();
+app.UseMiddleware<JwtMiddleware>();
 
-    // app.MapDefaultControllerRoute();
-    app.MapControllers();
+// app.MapDefaultControllerRoute();
+app.MapControllers();
 
 app.Run();
