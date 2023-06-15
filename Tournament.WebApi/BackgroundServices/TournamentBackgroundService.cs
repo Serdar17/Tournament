@@ -18,10 +18,16 @@ public class TournamentBackgroundService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Background service started at {time}", DateTime.Now);
+        
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(TimeSpan.FromSeconds(DelayServiceInSecond), stoppingToken);
 
+            var result = await _competitionService.ExecuteAsync();
+            
+            if (result.IsSuccess)
+                _logger.LogInformation("Создание новых пар, подсчитаны рейтинги игроков");
+            
             _logger.LogInformation($"Competition Guid ={_competitionService.CurrentCompetitionId}");
             _logger.LogInformation("Произошло событие в фоновой службе");
 

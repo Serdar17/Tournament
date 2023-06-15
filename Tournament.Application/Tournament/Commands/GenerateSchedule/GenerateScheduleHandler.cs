@@ -40,12 +40,11 @@ public class GenerateScheduleHandler : ICommandHandler<GenerateScheduleCommand>
             
             return Result.NotFound($"Entity \"{nameof(Competition)}\" ({request.CompetitionId}) was not found.");
         }
+
+        var availablePlayers =
+            await _playerRepository.GetAvailablePlayersByCompetitionId(competition.Id, cancellationToken);
         
-        var players = await _playerRepository.GetPlayersByCompetitionId(competition.Id, cancellationToken);
-        
-        var pairs = _scheduleService.GenerateSchedule(players
-            .Where(x => x is { IsParticipation: true, IsBlocked: false })
-            .ToList());
+        var pairs = _scheduleService.GenerateSchedule(availablePlayers);
 
         foreach (var pair in pairs)
         {
@@ -56,9 +55,16 @@ public class GenerateScheduleHandler : ICommandHandler<GenerateScheduleCommand>
                 CompetitionId = competition.Id,
                 Competition = competition
             };
-            
+            var firstPlayer = availablePlayers.Find(x => x.Id == pair.Item1.Id);
+            firstPlayer?.PlayedGames.Add(pair.Item2.Id);
+
+            var secondPlayer = availablePlayers.Find(x => x.Id == pair.Item2.Id);
+            secondPlayer?.PlayedGames.Add(pair.Item1.Id);
+
             await _scheduleRepository.AddAsync(schedule, cancellationToken);
         }
+
+        await _playerRepository.UpdateRange(availablePlayers, cancellationToken);
 
         await _scheduleRepository.SaveAsync(cancellationToken);
 

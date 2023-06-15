@@ -57,10 +57,10 @@ public class SaveScheduleHandler : ICommandHandler<SaveScheduleCommand>
             await _playerRepository.GetPlayerByIdAsync(request.ConfirmedMatchResultLookup.SecondPlayerId, cancellationToken);
         
         firstPlayer.SetScore(request.ConfirmedMatchResultLookup.FirstPlayerScore.FirstPlayerScored, 
-            request.ConfirmedMatchResultLookup.FirstPlayerScore.SecondPlayerScored, request.ConfirmedMatchResultLookup.SecondPlayerId);
+            request.ConfirmedMatchResultLookup.FirstPlayerScore.SecondPlayerScored);
             
         secondPlayer.SetScore(request.ConfirmedMatchResultLookup.SecondPlayerScore!.SecondPlayerScored, 
-            request.ConfirmedMatchResultLookup.SecondPlayerScore.FirstPlayerScored, request.ConfirmedMatchResultLookup.FirstPlayerId);
+            request.ConfirmedMatchResultLookup.SecondPlayerScore.FirstPlayerScored);
         
         _dbContext.Players.UpdateRange(firstPlayer, secondPlayer);
         

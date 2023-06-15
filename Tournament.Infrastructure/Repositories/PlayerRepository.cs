@@ -30,6 +30,14 @@ public class PlayerRepository : IPlayerRepository
             .ToListAsync(cancellationToken: cancellationToken);
     }
 
+    public async Task<List<Player>> GetAvailablePlayersByCompetitionId(Guid competitionId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Players
+            .Where(x => x.CompetitionId == competitionId && x.IsParticipation && !x.IsBlocked)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task Add(Player player, CancellationToken cancellationToken = default)
     {
         _dbContext.Players.Add(player);

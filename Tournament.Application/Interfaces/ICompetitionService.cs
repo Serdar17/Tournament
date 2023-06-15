@@ -1,6 +1,10 @@
-﻿namespace Tournament.Application.Interfaces;
+﻿using Ardalis.Result;
+
+namespace Tournament.Application.Interfaces;
 
 public interface ICompetitionService
 {
-    public Guid CurrentCompetitionId { get; set; }
+    Guid CurrentCompetitionId { get; set; }
+
+    Task<Result> ExecuteAsync();
 }

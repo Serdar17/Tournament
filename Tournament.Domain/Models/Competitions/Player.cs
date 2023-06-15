@@ -30,7 +30,7 @@ public sealed class Player : BaseEntity<Guid>
 
     public List<Guid> PlayedGames { get; set; } = new();
 
-    public void SetScore(int score, int missed, Guid secondPlayerId)
+    public void SetScore(int score, int missed)
     {
         if (score > missed)
             WinGameCount += 1;
@@ -39,6 +39,5 @@ public sealed class Player : BaseEntity<Guid>
         
         Scored += score;
         Missed += missed;
-        PlayedGames.Add(secondPlayerId);
     }
 }

@@ -8,6 +8,9 @@ public interface IPlayerRepository
 
     Task<IEnumerable<Player>> GetPlayersByCompetitionId(Guid competitionId, CancellationToken cancellationToken = default);
 
+    Task<List<Player>> GetAvailablePlayersByCompetitionId(Guid competitionId,
+        CancellationToken cancellationToken = default);
+
     Task Add(Player player, CancellationToken cancellationToken = default);
 
     Task Update(Player player, CancellationToken cancellationToken = default);
